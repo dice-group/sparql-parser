@@ -6,6 +6,7 @@
 #define SPARQL_PARSER_SPARQLFINALVISITOR_HPP
 
 #include <Sparql/SparqlBaseVisitor.h>
+#include <Dice//Sparql-Query/SelectQuery.hpp>
 
 class SparqlFinalVisitor : public Dice::tentris::sparql::parser::SparqlBaseVisitor
 {
@@ -13,6 +14,7 @@ public:
 
     antlrcpp::Any visitSelectQuery(Dice::tentris::sparql::parser::SparqlParser::SelectQueryContext *ctx) override {
         return SparqlBaseVisitor::visitSelectQuery(ctx);
+
     }
 
     antlrcpp::Any
