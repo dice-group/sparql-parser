@@ -5,7 +5,7 @@
 #ifndef SPARQL_PARSER_SPARQLFINALVISITOR_HPP
 #define SPARQL_PARSER_SPARQLFINALVISITOR_HPP
 
-#include <SparqlBaseVisitor.h>
+#include <Sparql/SparqlBaseVisitor.h>
 
 class SparqlFinalVisitor : public Dice::tentris::sparql::parser::SparqlBaseVisitor
 {
