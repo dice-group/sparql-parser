@@ -39,11 +39,12 @@ public:
         //visit where clause
         std::shared_ptr<ICommandNode> commandNode = visitWhereClause(ctx->whereClause());
 
+        //get all solution modifiers.visitSolutionModifier() must handle the order.
+        std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers = visitSolutionModifier(
+                ctx->solutionModifier());
+
         //deal with the solution modifiers
-        if (ctx->solutionModifier() != nullptr) {
-            //get all solution modifiers.visitSolutionModifier() must handle the order.
-            std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers = visitSolutionModifier(
-                    ctx->solutionModifier());
+        if (solutionModifiers.size() != 0) {
 
             //get the first modifier
             std::shared_ptr<ISolutionModifier> firstModifier = solutionModifiers.front();
@@ -107,18 +108,28 @@ public:
     }
 
 
+    antlrcpp::Any
+    visitSolutionModifier(Dice::tentris::sparql::parser::SparqlParser::SolutionModifierContext *ctx) override {
+        std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers;
 
+        if(ctx->groupClause()!= nullptr)
+        {
 
+        }
+        if(ctx->havingClause()!=nullptr)
+        {
 
+        }
+        if(ctx->orderClause()!= nullptr)
+        {
 
+        }
+        if(ctx->limitOffsetClauses()!= nullptr)
+        {
 
-
-
-
-
-
-
-
+        }
+        return solutionModifiers;
+    }
 
 
     antlrcpp::Any visitWhereClause(Dice::tentris::sparql::parser::SparqlParser::WhereClauseContext *ctx) override {
@@ -132,10 +143,7 @@ public:
         return SparqlBaseVisitor::visitGroupGraphPattern(ctx);
     }
 
-    antlrcpp::Any
-    visitSolutionModifier(Dice::tentris::sparql::parser::SparqlParser::SolutionModifierContext *ctx) override {
-        return SparqlBaseVisitor::visitSolutionModifier(ctx);
-    }
+
 
     antlrcpp::Any
     visitLimitOffsetClauses(Dice::tentris::sparql::parser::SparqlParser::LimitOffsetClausesContext *ctx) override {
