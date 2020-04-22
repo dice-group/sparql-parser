@@ -39,7 +39,7 @@ public:
         //visit where clause
         std::shared_ptr<ICommandNode> commandNode = visitWhereClause(ctx->whereClause());
 
-        //get all solution modifiers.visitSolutionModifier() must handle the order.
+        //get all solution modifiers. visitSolutionModifier() must handle the order.
         std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers = visitSolutionModifier(
                 ctx->solutionModifier());
 
@@ -114,33 +114,46 @@ public:
 
         if(ctx->groupClause()!= nullptr)
         {
-
+            //ToDo
         }
+
         if(ctx->havingClause()!=nullptr)
         {
-
+            //ToDo
         }
+
         if(ctx->orderClause()!= nullptr)
         {
-
+            //ToDo
         }
+
         if(ctx->limitOffsetClauses()!= nullptr)
         {
-
+            //ToDo
         }
+
         return solutionModifiers;
     }
 
 
     antlrcpp::Any visitWhereClause(Dice::tentris::sparql::parser::SparqlParser::WhereClauseContext *ctx) override {
         return visitGroupGraphPattern(ctx->groupGraphPattern());
+
     }
 
 
 
     antlrcpp::Any
     visitGroupGraphPattern(Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternContext *ctx) override {
-        return SparqlBaseVisitor::visitGroupGraphPattern(ctx);
+        std::shared_ptr<ICommandNode> commandNode;
+
+        //ToDo
+        if (ctx->subSelect()!= nullptr)
+            commandNode=visitSubSelect(ctx->subSelect());
+        else
+            commandNode=visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
+
+        return commandNode;
     }
 
 
