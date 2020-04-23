@@ -159,6 +159,8 @@ public:
     antlrcpp::Any
     visitGroupGraphPatternSub(Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternSubContext *ctx) override {
 
+        std::shared_ptr<ICommandNode> commandNode;
+
         //ToDo
         if(ctx->triplesBlock()!= nullptr)
         {
@@ -170,11 +172,15 @@ public:
             //ToDo
         }
 
+        return commandNode;
+
     }
 
 
     antlrcpp::Any visitGroupGraphPatternSubList(
             Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternSubListContext *ctx) override {
+
+        std::shared_ptr<ICommandNode> commandNode;
 
         //Deal with the graphPatternNotTriples
         //ToDo
@@ -185,11 +191,15 @@ public:
         {
 
         }
+
+        return commandNode;
     }
 
 
     antlrcpp::Any visitGraphPatternNotTriples(
             Dice::tentris::sparql::parser::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
+
+        std::shared_ptr<ICommandNode> commandNode;
 
         //ToDo
         if(ctx->optionalGraphPattern()!= nullptr)
@@ -197,6 +207,9 @@ public:
 
         }
         //ToDo deal with the remaining types
+
+
+        return commandNode;
     }
 
 
