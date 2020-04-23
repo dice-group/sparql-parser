@@ -156,7 +156,51 @@ public:
         return commandNode;
     }
 
+    antlrcpp::Any
+    visitGroupGraphPatternSub(Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternSubContext *ctx) override {
 
+        //ToDo
+        if(ctx->triplesBlock()!= nullptr)
+        {
+
+        }
+
+        for(auto& subList:ctx->groupGraphPatternSubList())
+        {
+            //ToDo
+        }
+
+    }
+
+
+    antlrcpp::Any visitGroupGraphPatternSubList(
+            Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternSubListContext *ctx) override {
+
+        //Deal with the graphPatternNotTriples
+        //ToDo
+
+        //Deal with the triplesBlock
+        //ToDo
+        if(ctx->triplesBlock()!= nullptr)
+        {
+
+        }
+    }
+
+
+    antlrcpp::Any visitGraphPatternNotTriples(
+            Dice::tentris::sparql::parser::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
+
+        //ToDo
+        if(ctx->optionalGraphPattern()!= nullptr)
+        {
+
+        }
+        //ToDo deal with the remaining types
+    }
+
+
+public:
 
     antlrcpp::Any
     visitLimitOffsetClauses(Dice::tentris::sparql::parser::SparqlParser::LimitOffsetClausesContext *ctx) override {
@@ -186,10 +230,7 @@ public:
         return SparqlBaseVisitor::visitTriplesBlock(ctx);
     }
 
-    antlrcpp::Any visitGraphPatternNotTriples(
-            Dice::tentris::sparql::parser::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
-        return SparqlBaseVisitor::visitGraphPatternNotTriples(ctx);
-    }
+
 
     antlrcpp::Any
     visitOptionalGraphPattern(Dice::tentris::sparql::parser::SparqlParser::OptionalGraphPatternContext *ctx) override {
