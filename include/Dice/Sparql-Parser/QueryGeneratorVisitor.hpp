@@ -16,6 +16,8 @@
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/ReducedSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SolutionDecorator.hpp>
 
+#include <Dice/rdf_parser/RDF/Term.hpp>
+
 #include "SelectNodeType.hpp"
 #include "SelectClause.hpp"
 #include "Exceptions.hpp"
