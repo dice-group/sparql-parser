@@ -5,5 +5,21 @@ project(sparql-parser VERSION 0.9.0)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(sparql-parser  main.cpp)
-target_link_libraries(sparql-parser ${CONAN_LIBS})
+
+# define a header-only library
+add_library(sparql-parser  INTERFACE)
+add_library(Dice::sparql-parser  ALIAS sparql-parser )
+
+target_include_directories(sparql-parser  INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${sparql-parser_INSTALL_CMAKE_DIR}>
+        )
+target_link_libraries(sparql-parser INTERFACE  ${CONAN_LIBS})
+
+
+# testing
+option(sparql-parser_BUILD_TESTS "Build sparql-parser tests." ON)
+if(sparql-parser_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
