@@ -221,7 +221,25 @@ public:
     }
 
 
+    antlrcpp::Any visitTriplesSameSubjectPath(
+            Dice::tentris::sparql::parser::SparqlParser::TriplesSameSubjectPathContext *ctx) override {
+        return SparqlParserBaseVisitor::visitTriplesSameSubjectPath(ctx);
+    }
 
+
+    antlrcpp::Any visitVarOrTerm(Dice::tentris::sparql::parser::SparqlParser::VarOrTermContext *ctx) override {
+        return SparqlParserBaseVisitor::visitVarOrTerm(ctx);
+    }
+
+
+private:
+    antlrcpp::Any visitGraphTerm(Dice::tentris::sparql::parser::SparqlParser::GraphTermContext *ctx) override {
+        std::string termRaw=ctx->getText();
+        rdf_parser::store::rdf::Term term=rdf_parser::Turtle::parseTerm(termRaw);
+        return term;
+    }
+
+public:
     antlrcpp::Any
     visitOptionalGraphPattern(Dice::tentris::sparql::parser::SparqlParser::OptionalGraphPatternContext *ctx) override {
         return SparqlBaseVisitor::visitOptionalGraphPattern(ctx);
