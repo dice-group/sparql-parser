@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "GrammerTests.cpp"
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
