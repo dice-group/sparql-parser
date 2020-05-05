@@ -9,14 +9,18 @@
 #include <vector>
 
 #include <SparqlParser/SparqlParserBaseVisitor.h>
+
 #include <Dice/Sparql-Query/SelectQuery.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/AbstractSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DefaultSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DistinctSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/ReducedSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SolutionDecorator.hpp>
+#include <Dice/Sparql-Query/TriplePatternElement.hpp>
 
 #include <Dice/rdf_parser/RDF/Term.hpp>
+
+
 
 #include "SelectNodeType.hpp"
 #include "SelectClause.hpp"
@@ -228,12 +232,27 @@ public:
 
 
     antlrcpp::Any visitVarOrTerm(Dice::tentris::sparql::parser::SparqlParser::VarOrTermContext *ctx) override {
+
+
+
         //visit term
         if(ctx->graphTerm()!= nullptr)
             return visitGraphTerm(ctx->graphTerm());
         //visit var
         else
-            return visitGraphTerm(ctx->graphTerm());
+            return visitVar(ctx->var());
+    }
+
+
+    antlrcpp::Any visitVar(Dice::tentris::sparql::parser::SparqlParser::VarContext *ctx) override {
+        if(ctx->VAR1()!= nullptr)
+        {
+            return TripleVariable(ctx->VAR1()->children.at(1)->getText());
+        } else
+        {
+            return TripleVariable(ctx->VAR2()->children.at(1)->getText());
+        }
+
     }
 
 
@@ -244,18 +263,6 @@ public:
         return term;
     }
 
-
-    antlrcpp::Any
-    visitOptionalGraphPattern(Dice::tentris::sparql::parser::SparqlParser::OptionalGraphPatternContext *ctx) override {
-        return SparqlBaseVisitor::visitOptionalGraphPattern(ctx);
-    }
-
-
-
-    antlrcpp::Any visitGroupOrUnionGraphPattern(
-            Dice::tentris::sparql::parser::SparqlParser::GroupOrUnionGraphPatternContext *ctx) override {
-        return SparqlBaseVisitor::visitGroupOrUnionGraphPattern(ctx);
-    }
 
 
 
