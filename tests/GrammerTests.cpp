@@ -38,5 +38,6 @@ TEST(GrammerTests, GraphTermTest) {
 
     QueryGeneratorVisitor visitor;
     Term term= visitor.visitGraphTerm(tree);
+    ASSERT_EQ(term,Term::make_term(iri));
 
 }
