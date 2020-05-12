@@ -8,12 +8,12 @@ namespace
     using namespace Dice::tentris::sparql::parser;
 }
 
-std::unique_ptr<SparqlParser> createParser(std::string text)
+SparqlParser* createParser(std::string text)
 {
-    antlr4::ANTLRInputStream input(text);
-    SparqlLexer lexer(&input);
-    antlr4::CommonTokenStream tokens(&lexer);
-    std::unique_ptr<SparqlParser> parser=std::make_unique<SparqlParser>(&tokens);
+    antlr4::ANTLRInputStream* input=new antlr4::ANTLRInputStream(text);
+    SparqlLexer* lexer=new SparqlLexer(input);
+    antlr4::CommonTokenStream* tokens=new antlr4::CommonTokenStream(lexer);
+    SparqlParser* parser=new  SparqlParser(tokens);
     return parser;
 }
 
@@ -27,5 +27,16 @@ TEST(GrammerTests, Var1Test) {
 
 
 
+
+}
+
+TEST(GrammerTests, GraphTermTest) {
+
+    std::string iri{"<http://script.example/Latin>"};
+    SparqlParser*  parser=createParser(iri);
+    SparqlParser::GraphTermContext* tree=parser->graphTerm();
+
+    QueryGeneratorVisitor visitor;
+    Term term= visitor.visitGraphTerm(tree);
 
 }
