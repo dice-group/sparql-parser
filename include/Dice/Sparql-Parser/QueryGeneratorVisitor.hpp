@@ -220,9 +220,9 @@ public:
 
 
 
-    antlrcpp::Any visitTriplesBlock(Dice::tentris::sparql::parser::SparqlParser::TriplesBlockContext *ctx) override {
-        return SparqlBaseVisitor::visitTriplesBlock(ctx);
-    }
+//    antlrcpp::Any visitTriplesBlock(Dice::tentris::sparql::parser::SparqlParser::TriplesBlockContext *ctx) override {
+//        return SparqlBaseVisitor::visitTriplesBlock(ctx);
+//    }
 
 
     antlrcpp::Any visitTriplesSameSubjectPath(
