@@ -3,6 +3,8 @@
 #include <SparqlLexer/SparqlLexer.h>
 #include <SparqlParser/SparqlParser.h>
 
+#include <Dice/Sparql-Query/TripleVariable.hpp>
+
 namespace
 {
     using namespace Dice::tentris::sparql::parser;
@@ -18,21 +20,32 @@ SparqlParser* createParser(std::string text)
 }
 
 
-TEST(GrammerTests, junk) {
-
-}
 
 
-TEST(GrammerTests, Var1Test) {
+TEST(GrammerTests, VarTest) {
 
+    //test var1 type
+    std::string var1{"?abc"};
+    //test var2 type
+    std::string var2{"$abc"};
+    SparqlParser*  parser1=createParser(var1);
+    SparqlParser*  parser2=createParser(var2);
 
+    SparqlParser::VarContext* tree1=parser1->var();
+    SparqlParser::VarContext* tree2=parser2->var();
+
+    QueryGeneratorVisitor visitor;
+    TripleVariable tripleVariable1= visitor.visitVar(tree1);
+    TripleVariable tripleVariable2= visitor.visitVar(tree2);
+    ASSERT_EQ(tripleVariable1.getName(),"abc");
+    ASSERT_EQ(tripleVariable2.getName(),"abc");
 
 
 }
 
 TEST(GrammerTests, GraphTermTest) {
 
-    std::string iri{"<http://script.example/Latin>"};
+    std::string iri{"<http://script.example/example1>"};
     SparqlParser*  parser=createParser(iri);
     SparqlParser::GraphTermContext* tree=parser->graphTerm();
 

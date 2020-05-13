@@ -245,12 +245,12 @@ public:
 
 
     antlrcpp::Any visitVar(Dice::tentris::sparql::parser::SparqlParser::VarContext *ctx) override {
-        if(ctx->VAR1()!= nullptr)
+        if(ctx->VAR1() != nullptr)
         {
-            return TripleVariable(ctx->VAR1()->children.at(1)->getText());
+            return TripleVariable(ctx->VAR1()->getText().substr(1,ctx->VAR1()->getText().length()-1));
         } else
         {
-            return TripleVariable(ctx->VAR2()->children.at(1)->getText());
+            return TripleVariable(ctx->VAR2()->getText().substr(1,ctx->VAR2()->getText().length()-1));
         }
 
     }
