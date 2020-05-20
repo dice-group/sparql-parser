@@ -231,6 +231,64 @@ public:
     }
 
 
+private:
+    antlrcpp::Any visitPropertyListPathNotEmpty(
+            Dice::tentris::sparql::parser::SparqlParser::PropertyListPathNotEmptyContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPropertyListPathNotEmpty(ctx);
+    }
+
+    antlrcpp::Any visitVerbPath(Dice::tentris::sparql::parser::SparqlParser::VerbPathContext *ctx) override {
+        return SparqlParserBaseVisitor::visitVerbPath(ctx);
+    }
+
+    antlrcpp::Any
+    visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathAlternative(ctx);
+    }
+
+    antlrcpp::Any visitPathSequence(Dice::tentris::sparql::parser::SparqlParser::PathSequenceContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathSequence(ctx);
+    }
+
+    antlrcpp::Any
+    visitPathEltOrInverse(Dice::tentris::sparql::parser::SparqlParser::PathEltOrInverseContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathEltOrInverse(ctx);
+    }
+
+    antlrcpp::Any visitPathElt(Dice::tentris::sparql::parser::SparqlParser::PathEltContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathElt(ctx);
+    }
+
+    antlrcpp::Any visitPathPrimary(Dice::tentris::sparql::parser::SparqlParser::PathPrimaryContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathPrimary(ctx);
+    }
+
+    antlrcpp::Any visitIri(Dice::tentris::sparql::parser::SparqlParser::IriContext *ctx) override {
+        return SparqlParserBaseVisitor::visitIri(ctx);
+    }
+
+    antlrcpp::Any visitPath(Dice::tentris::sparql::parser::SparqlParser::PathContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPath(ctx);
+    }
+
+    antlrcpp::Any visitPathNegatedPropertySet(
+            Dice::tentris::sparql::parser::SparqlParser::PathNegatedPropertySetContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathNegatedPropertySet(ctx);
+    }
+
+    antlrcpp::Any
+    visitPathOneInPropertySet(Dice::tentris::sparql::parser::SparqlParser::PathOneInPropertySetContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathOneInPropertySet(ctx);
+    }
+
+    antlrcpp::Any visitPathMod(Dice::tentris::sparql::parser::SparqlParser::PathModContext *ctx) override {
+        return SparqlParserBaseVisitor::visitPathMod(ctx);
+    }
+
+public:
+
+
+    //partialy done ..check the return type
     antlrcpp::Any visitVarOrTerm(Dice::tentris::sparql::parser::SparqlParser::VarOrTermContext *ctx) override {
 
 
@@ -244,6 +302,7 @@ public:
     }
 
 
+    //Done
     antlrcpp::Any visitVar(Dice::tentris::sparql::parser::SparqlParser::VarContext *ctx) override {
         if(ctx->VAR1() != nullptr)
         {
@@ -255,8 +314,7 @@ public:
 
     }
 
-
-
+    //Done
     antlrcpp::Any visitGraphTerm(Dice::tentris::sparql::parser::SparqlParser::GraphTermContext *ctx) override {
         std::string termRaw=ctx->getText();
         rdf_parser::store::rdf::Term term=rdf_parser::Turtle::parseTerm(termRaw);

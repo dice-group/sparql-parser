@@ -22,6 +22,35 @@ SparqlParser* createParser(std::string text)
 
 
 
+
+
+
+
+
+
+
+
+TEST(GrammerTests,varOrTermTest) {
+
+    //test var type
+    std::string var1{"?abc"};
+    //test term type
+    std::string termString{"<http://script.example/example1>"};
+    SparqlParser*  parser1=createParser(var1);
+    SparqlParser*  parser2=createParser(termString);
+
+    SparqlParser::VarOrTermContext* tree1=parser1->varOrTerm();
+    SparqlParser::VarOrTermContext* tree2=parser2->varOrTerm();
+
+    QueryGeneratorVisitor visitor;
+    TripleVariable tripleVariable= visitor.visitVarOrTerm(tree1);
+    Term term= visitor.visitVarOrTerm(tree2);
+    ASSERT_EQ(tripleVariable.getName(),"abc");
+    ASSERT_EQ(term,Term::make_term(termString));
+
+
+}
+
 TEST(GrammerTests, VarTest) {
 
     //test var1 type
