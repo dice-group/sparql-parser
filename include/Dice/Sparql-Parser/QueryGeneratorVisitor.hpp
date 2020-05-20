@@ -231,7 +231,6 @@ public:
     }
 
 
-private:
     antlrcpp::Any visitPropertyListPathNotEmpty(
             Dice::tentris::sparql::parser::SparqlParser::PropertyListPathNotEmptyContext *ctx) override {
         return SparqlParserBaseVisitor::visitPropertyListPathNotEmpty(ctx);
@@ -282,10 +281,9 @@ private:
     }
 
     antlrcpp::Any visitPathMod(Dice::tentris::sparql::parser::SparqlParser::PathModContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathMod(ctx);
+        return ctx->getText();
     }
 
-public:
 
 
     //partialy done ..check the return type

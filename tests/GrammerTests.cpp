@@ -83,3 +83,15 @@ TEST(GrammerTests, GraphTermTest) {
     ASSERT_EQ(term,Term::make_term(iri));
 
 }
+
+TEST(GrammerTests, pathModeTest) {
+
+    std::string modeString{"+"};
+    SparqlParser*  parser=createParser(modeString);
+    SparqlParser::PathModContext* tree=parser->pathMod();
+
+    QueryGeneratorVisitor visitor;
+    std::string mode= visitor.visitPathMod(tree);
+    ASSERT_EQ(mode,"+");
+
+}
