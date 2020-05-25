@@ -24,6 +24,7 @@
 
 #include "SelectNodeType.hpp"
 #include "SelectClause.hpp"
+#include "PropertySetElement.hpp"
 #include "Exceptions.hpp"
 
 class QueryGeneratorVisitor : Dice::tentris::sparql::parser::SparqlParserBaseVisitor{
@@ -262,24 +263,55 @@ public:
         return SparqlParserBaseVisitor::visitPathPrimary(ctx);
     }
 
-    antlrcpp::Any visitIri(Dice::tentris::sparql::parser::SparqlParser::IriContext *ctx) override {
-        return SparqlParserBaseVisitor::visitIri(ctx);
-    }
 
     antlrcpp::Any visitPath(Dice::tentris::sparql::parser::SparqlParser::PathContext *ctx) override {
         return SparqlParserBaseVisitor::visitPath(ctx);
     }
 
+    //done
     antlrcpp::Any visitPathNegatedPropertySet(
             Dice::tentris::sparql::parser::SparqlParser::PathNegatedPropertySetContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathNegatedPropertySet(ctx);
+        std::vector<PropertySetElement> elements;
+        for(auto element:ctx->pathOneInPropertySet())
+            elements.push_back(visitPathOneInPropertySet(element));
+        return elements;
     }
 
+    //done
     antlrcpp::Any
     visitPathOneInPropertySet(Dice::tentris::sparql::parser::SparqlParser::PathOneInPropertySetContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathOneInPropertySet(ctx);
+        bool isInvsersed;
+        if(ctx->INVERSE()!= nullptr)
+            isInvsersed=true;
+        else
+            isInvsersed=false;
+        //if it has an iri
+        if(ctx->iri()!=nullptr)
+        {
+            rdf_parser::store::rdf::URIRef iri=visitIri(ctx->iri());
+            return IriPropertySetElement(iri,isInvsersed);
+        }
+        //then it has an A
+        else
+            return  APropertySetElement(isInvsersed);
     }
 
+    antlrcpp::Any visitIri(Dice::tentris::sparql::parser::SparqlParser::IriContext *ctx) override {
+        //if the iri is IRIREF
+        if(ctx->IRIREF()!= nullptr)
+        {
+            Term term= Term::make_term(ctx->IRIREF()->getText());
+            return term;
+        }
+        //else the iri is prefixedName
+        else
+        {
+
+        }
+    }
+
+
+    //done
     antlrcpp::Any visitPathMod(Dice::tentris::sparql::parser::SparqlParser::PathModContext *ctx) override {
         return ctx->getText();
     }

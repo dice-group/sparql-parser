@@ -95,3 +95,17 @@ TEST(GrammerTests, pathModeTest) {
     ASSERT_EQ(mode,"+");
 
 }
+
+
+
+TEST(GrammerTests, iriTest) {
+
+    std::string iriString{"<http://purl.org/dc/elements/1.1/title>"};
+    SparqlParser*  parser=createParser(iriString);
+    SparqlParser::IriContext* tree=parser->iri();
+
+    QueryGeneratorVisitor visitor;
+    Term iri= visitor.visitIri(tree);
+    ASSERT_EQ(iri,Term::make_term(iriString));
+
+}
