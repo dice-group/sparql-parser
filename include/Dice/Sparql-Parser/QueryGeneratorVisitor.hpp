@@ -238,16 +238,26 @@ public:
     }
 
     antlrcpp::Any visitVerbPath(Dice::tentris::sparql::parser::SparqlParser::VerbPathContext *ctx) override {
-        return SparqlParserBaseVisitor::visitVerbPath(ctx);
+        return visitPath(ctx->path());
+    }
+
+    antlrcpp::Any visitPath(Dice::tentris::sparql::parser::SparqlParser::PathContext *ctx) override {
+        return visitPathAlternative(ctx->pathAlternative());
     }
 
     antlrcpp::Any
     visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathAlternative(ctx);
+        std::vector<> pathSequences;
+        for(auto sequence:ctx->pathSequence())
+            pathSequences.push_back(visitPathSequence(sequence));
+        return pathSequences;
     }
 
     antlrcpp::Any visitPathSequence(Dice::tentris::sparql::parser::SparqlParser::PathSequenceContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathSequence(ctx);
+        std::vector<> elements;
+        for(auto element:ctx->pathEltOrInverse())
+            elements.push_back(visitPathEltOrInverse(element));
+        return elements;
     }
 
     antlrcpp::Any
@@ -264,9 +274,7 @@ public:
     }
 
 
-    antlrcpp::Any visitPath(Dice::tentris::sparql::parser::SparqlParser::PathContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPath(ctx);
-    }
+
 
     //done
     antlrcpp::Any visitPathNegatedPropertySet(
