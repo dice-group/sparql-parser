@@ -19,6 +19,15 @@ private:
 
 public:
     PropertySetElement(bool isInversed,PathMode pathMode):isInversed(isInversed),pathMode(pathMode){};
+
+    void setIsInversed(bool isInversed)
+    {
+        this->isInversed=isInversed;
+    }
+    void setpathMode(pathMode pathMode)
+    {
+        this->pathMode=pathMode;
+    }
 };
 
 

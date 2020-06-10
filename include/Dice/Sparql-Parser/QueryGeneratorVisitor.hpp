@@ -247,14 +247,14 @@ public:
 
     antlrcpp::Any
     visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
-        std::vector<> pathSequences;
+        std::vector<PathSequence> pathSequences;
         for(auto sequence:ctx->pathSequence())
             pathSequences.push_back(visitPathSequence(sequence));
         return pathSequences;
     }
 
     antlrcpp::Any visitPathSequence(Dice::tentris::sparql::parser::SparqlParser::PathSequenceContext *ctx) override {
-        std::vector<> elements;
+        std::vector<PropertySetElement> elements;
         for(auto element:ctx->pathEltOrInverse())
             elements.push_back(visitPathEltOrInverse(element));
         return elements;
@@ -262,11 +262,17 @@ public:
 
     antlrcpp::Any
     visitPathEltOrInverse(Dice::tentris::sparql::parser::SparqlParser::PathEltOrInverseContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathEltOrInverse(ctx);
+       PropertySetElement element=visitPathElt(ctx->pathElt());
+       if(ctx->INVERSE()!= nullptr)
+           element.setIsInversed(true);
+        return element;
     }
 
     antlrcpp::Any visitPathElt(Dice::tentris::sparql::parser::SparqlParser::PathEltContext *ctx) override {
-        return SparqlParserBaseVisitor::visitPathElt(ctx);
+        PropertySetElement element=visitPathPrimary(ctx->pathPrimary());
+        if(ctx->pathMod()!= nullptr)
+            element.setpathMode(visitPathMod(ctx->pathMod()));
+        return element;
     }
 
     antlrcpp::Any visitPathPrimary(Dice::tentris::sparql::parser::SparqlParser::PathPrimaryContext *ctx) override {
@@ -321,7 +327,15 @@ public:
 
     //done
     antlrcpp::Any visitPathMod(Dice::tentris::sparql::parser::SparqlParser::PathModContext *ctx) override {
-        return ctx->getText();
+        std::string mod= ctx->getText();
+        PathMode pathMode;
+        if(mod=="?")
+            pathMode=PathMode::ZeroOrOne;
+        else if(mod=="*")
+            pathMode=PathMode::Any;
+        else if(mod=="+")
+            pathMode=PathMode::MoreThanZero;
+        return pathMode ;
     }
 
 
