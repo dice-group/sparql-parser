@@ -26,6 +26,7 @@
 #include "SelectClause.hpp"
 #include "PropertySetElement.hpp"
 #include "Exceptions.hpp"
+#include "TripleObject.hpp"
 
 class QueryGeneratorVisitor : Dice::tentris::sparql::parser::SparqlParserBaseVisitor{
 public:
@@ -366,6 +367,7 @@ public:
 
     }
 
+
     //Done
     antlrcpp::Any visitGraphTerm(Dice::tentris::sparql::parser::SparqlParser::GraphTermContext *ctx) override {
         std::string termRaw=ctx->getText();
@@ -374,9 +376,73 @@ public:
     }
 
 
+private:
+    antlrcpp::Any visitVerbSimple(Dice::tentris::sparql::parser::SparqlParser::VerbSimpleContext *ctx) override {
+        return visitVar(ctx->var());
+    }
 
+    antlrcpp::Any visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) override;
+
+    antlrcpp::Any visitObject(Dice::tentris::sparql::parser::SparqlParser::ObjectContext *ctx) override;
+
+    antlrcpp::Any visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) override;
+
+    antlrcpp::Any visitTriplesNode(Dice::tentris::sparql::parser::SparqlParser::TriplesNodeContext *ctx) override;
+
+    antlrcpp::Any visitCollection(Dice::tentris::sparql::parser::SparqlParser::CollectionContext *ctx) override;
+
+    antlrcpp::Any
+    visitBlankNodePropertyList(Dice::tentris::sparql::parser::SparqlParser::BlankNodePropertyListContext *ctx) override;
+
+    antlrcpp::Any
+    visitPropertyListNotEmpty(Dice::tentris::sparql::parser::SparqlParser::PropertyListNotEmptyContext *ctx) override;
 
 };
 
+antlrcpp::Any
+QueryGeneratorVisitor::visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) {
+    std::vector<std::shared_ptr<AbstractTripleObject>> objects;
+    for(auto& object:ctx->object())
+        objects.push_back(visitObject(object));
+    return objects;
+}
+
+antlrcpp::Any QueryGeneratorVisitor::visitObject(Dice::tentris::sparql::parser::SparqlParser::ObjectContext *ctx) {
+    return visitGraphNode(ctx->graphNode());
+}
+
+antlrcpp::Any
+QueryGeneratorVisitor::visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) {
+    if(ctx->varOrTerm()!= nullptr)
+    {
+        return std::make_shared<SingleTripleObject>(visitVarOrTerm(ctx->varOrTerm()));
+    } else
+    {
+        return std::make_shared<CompositeTripleObject>(visitTriplesNode(ctx->triplesNode()));
+    }
+}
+
+antlrcpp::Any
+QueryGeneratorVisitor::visitTriplesNode(Dice::tentris::sparql::parser::SparqlParser::TriplesNodeContext *ctx) {
+    if(ctx->collection()!= nullptr)
+        return visitCollection(ctx->collection());
+    else
+        return visitBlankNodePropertyList(ctx->blankNodePropertyList());
+}
+
+antlrcpp::Any
+QueryGeneratorVisitor::visitCollection(Dice::tentris::sparql::parser::SparqlParser::CollectionContext *ctx) {
+    return SparqlParserBaseVisitor::visitCollection(ctx);
+}
+
+antlrcpp::Any QueryGeneratorVisitor::visitBlankNodePropertyList(
+        Dice::tentris::sparql::parser::SparqlParser::BlankNodePropertyListContext *ctx) {
+    return SparqlParserBaseVisitor::visitBlankNodePropertyList(ctx);
+}
+
+antlrcpp::Any QueryGeneratorVisitor::visitPropertyListNotEmpty(
+        Dice::tentris::sparql::parser::SparqlParser::PropertyListNotEmptyContext *ctx) {
+    return SparqlParserBaseVisitor::visitPropertyListNotEmpty(ctx);
+}
 
 #endif //SPARQL_PARSER_QUERYGENERATORVISITOR_HPP
