@@ -8,7 +8,7 @@ conan_basic_setup()
 
 # define a header-only library
 add_library(sparql-parser  INTERFACE)
-add_library(Dice::sparql-parser  ALIAS sparql-parser include/Dice/Sparql-Parser/TripleObject.hpp)
+add_library(Dice::sparql-parser  ALIAS sparql-parser )
 
 target_include_directories(sparql-parser  INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
