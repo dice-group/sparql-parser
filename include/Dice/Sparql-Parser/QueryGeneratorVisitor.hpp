@@ -15,22 +15,24 @@
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DefaultSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DistinctSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/ReducedSelectNode.hpp>
+#include <Dice/Sparql-Query/QueryNodes/leafNodes/TriplePatternNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SolutionDecorator.hpp>
 #include <Dice/Sparql-Query/TriplePatternElement.hpp>
 
 #include <Dice/rdf_parser/RDF/Term.hpp>
 
+#include <Dice/rdf_parser/Parser/Turtle/Parsers/StringParser.hpp>
+#include <Dice/rdf_parser/Sparql/TriplePatternElement.hpp>
 
 
 #include "SelectNodeType.hpp"
 #include "SelectClause.hpp"
 #include "PropertySetElement.hpp"
 #include "Exceptions.hpp"
-#include "TripleObject.hpp"
 
-class QueryGeneratorVisitor : Dice::tentris::sparql::parser::SparqlParserBaseVisitor{
+
+class QueryGeneratorVisitor : Dice::tentris::sparql::parser::SparqlParserBaseVisitor {
 public:
-
 
 
     antlrcpp::Any visitQuery(Dice::tentris::sparql::parser::SparqlParser::QueryContext *ctx) override {
@@ -68,7 +70,7 @@ public:
         } else
             queryNode = commandNode;
 
-        SelectClause clause=visitSelectClause(ctx->selectClause());
+        SelectClause clause = visitSelectClause(ctx->selectClause());
 
         //create the selectNode
         if (clause.nodeType == SelectNodeType::DISTINCT)
@@ -89,11 +91,11 @@ public:
         SelectNodeType nodeType;
 
         if (ctx->selectModifier() != nullptr)
-            nodeType = visitSelectModifier(ctx-> selectModifier());
+            nodeType = visitSelectModifier(ctx->selectModifier());
         else
             nodeType = SelectNodeType::DEFAULT;
 
-        selectClause.nodeType=nodeType;
+        selectClause.nodeType = nodeType;
 
         //ToDo deal with the variables
 
@@ -120,23 +122,19 @@ public:
     visitSolutionModifier(Dice::tentris::sparql::parser::SparqlParser::SolutionModifierContext *ctx) override {
         std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers;
 
-        if(ctx->groupClause()!= nullptr)
-        {
+        if (ctx->groupClause() != nullptr) {
             //ToDo
         }
 
-        if(ctx->havingClause()!=nullptr)
-        {
+        if (ctx->havingClause() != nullptr) {
             //ToDo
         }
 
-        if(ctx->orderClause()!= nullptr)
-        {
+        if (ctx->orderClause() != nullptr) {
             //ToDo
         }
 
-        if(ctx->limitOffsetClauses()!= nullptr)
-        {
+        if (ctx->limitOffsetClauses() != nullptr) {
             //ToDo
         }
 
@@ -150,16 +148,15 @@ public:
     }
 
 
-
     antlrcpp::Any
     visitGroupGraphPattern(Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternContext *ctx) override {
         std::shared_ptr<ICommandNode> commandNode;
 
         //ToDo
-        if (ctx->subSelect()!= nullptr)
-            commandNode=visitSubSelect(ctx->subSelect());
+        if (ctx->subSelect() != nullptr)
+            commandNode = visitSubSelect(ctx->subSelect());
         else
-            commandNode=visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
+            commandNode = visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
 
         return commandNode;
     }
@@ -170,13 +167,12 @@ public:
         std::shared_ptr<ICommandNode> commandNode;
 
         //ToDo
-        if(ctx->triplesBlock()!= nullptr)
-        {
+        if (ctx->triplesBlock() != nullptr) {
+
 
         }
 
-        for(auto& subList:ctx->groupGraphPatternSubList())
-        {
+        for (auto &subList:ctx->groupGraphPatternSubList()) {
             //ToDo
         }
 
@@ -194,10 +190,18 @@ public:
         //ToDo
 
         //Deal with the triplesBlock
-        //ToDo
-        if(ctx->triplesBlock()!= nullptr)
-        {
-
+        if (ctx->triplesBlock() != nullptr) {
+            std::vector<TriplePatternElement> elements;
+//            commandNode = std::make_shared<>()
+            rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->triplesBlock()->getText());
+            auto it = parser.begin();
+            while (it) {
+                //ToDo check this
+                TriplePatternElement  triple= (TriplePatternElement &&) *it;
+                elements.push_back(triple);
+                it++;
+            }
+            commandNode=std::make_shared<TriplePatternNode>(elements);
         }
 
         return commandNode;
@@ -210,8 +214,7 @@ public:
         std::shared_ptr<ICommandNode> commandNode;
 
         //ToDo
-        if(ctx->optionalGraphPattern()!= nullptr)
-        {
+        if (ctx->optionalGraphPattern() != nullptr) {
 
         }
         //ToDo deal with the remaining types
@@ -249,29 +252,29 @@ public:
     antlrcpp::Any
     visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
         std::vector<PathSequence> pathSequences;
-        for(auto sequence:ctx->pathSequence())
+        for (auto sequence:ctx->pathSequence())
             pathSequences.push_back(visitPathSequence(sequence));
         return pathSequences;
     }
 
     antlrcpp::Any visitPathSequence(Dice::tentris::sparql::parser::SparqlParser::PathSequenceContext *ctx) override {
         std::vector<PropertySetElement> elements;
-        for(auto element:ctx->pathEltOrInverse())
+        for (auto element:ctx->pathEltOrInverse())
             elements.push_back(visitPathEltOrInverse(element));
         return elements;
     }
 
     antlrcpp::Any
     visitPathEltOrInverse(Dice::tentris::sparql::parser::SparqlParser::PathEltOrInverseContext *ctx) override {
-       PropertySetElement element=visitPathElt(ctx->pathElt());
-       if(ctx->INVERSE()!= nullptr)
-           element.setIsInversed(true);
+        PropertySetElement element = visitPathElt(ctx->pathElt());
+        if (ctx->INVERSE() != nullptr)
+            element.setIsInversed(true);
         return element;
     }
 
     antlrcpp::Any visitPathElt(Dice::tentris::sparql::parser::SparqlParser::PathEltContext *ctx) override {
-        PropertySetElement element=visitPathPrimary(ctx->pathPrimary());
-        if(ctx->pathMod()!= nullptr)
+        PropertySetElement element = visitPathPrimary(ctx->pathPrimary());
+        if (ctx->pathMod() != nullptr)
             element.setpathMode(visitPathMod(ctx->pathMod()));
         return element;
     }
@@ -281,13 +284,11 @@ public:
     }
 
 
-
-
     //done
     antlrcpp::Any visitPathNegatedPropertySet(
             Dice::tentris::sparql::parser::SparqlParser::PathNegatedPropertySetContext *ctx) override {
         std::vector<PropertySetElement> elements;
-        for(auto element:ctx->pathOneInPropertySet())
+        for (auto element:ctx->pathOneInPropertySet())
             elements.push_back(visitPathOneInPropertySet(element));
         return elements;
     }
@@ -296,31 +297,28 @@ public:
     antlrcpp::Any
     visitPathOneInPropertySet(Dice::tentris::sparql::parser::SparqlParser::PathOneInPropertySetContext *ctx) override {
         bool isInvsersed;
-        if(ctx->INVERSE()!= nullptr)
-            isInvsersed=true;
+        if (ctx->INVERSE() != nullptr)
+            isInvsersed = true;
         else
-            isInvsersed=false;
+            isInvsersed = false;
         //if it has an iri
-        if(ctx->iri()!=nullptr)
-        {
-            rdf_parser::store::rdf::URIRef iri=visitIri(ctx->iri());
-            return IriPropertySetElement(iri,isInvsersed);
+        if (ctx->iri() != nullptr) {
+            rdf_parser::store::rdf::URIRef iri = visitIri(ctx->iri());
+            return IriPropertySetElement(iri, isInvsersed);
         }
-        //then it has an A
+            //then it has an A
         else
-            return  APropertySetElement(isInvsersed);
+            return APropertySetElement(isInvsersed);
     }
 
     antlrcpp::Any visitIri(Dice::tentris::sparql::parser::SparqlParser::IriContext *ctx) override {
         //if the iri is IRIREF
-        if(ctx->IRIREF()!= nullptr)
-        {
-            Term term= Term::make_term(ctx->IRIREF()->getText());
+        if (ctx->IRIREF() != nullptr) {
+            Term term = Term::make_term(ctx->IRIREF()->getText());
             return term;
         }
-        //else the iri is prefixedName
-        else
-        {
+            //else the iri is prefixedName
+        else {
 
         }
     }
@@ -328,17 +326,16 @@ public:
 
     //done
     antlrcpp::Any visitPathMod(Dice::tentris::sparql::parser::SparqlParser::PathModContext *ctx) override {
-        std::string mod= ctx->getText();
+        std::string mod = ctx->getText();
         PathMode pathMode;
-        if(mod=="?")
-            pathMode=PathMode::ZeroOrOne;
-        else if(mod=="*")
-            pathMode=PathMode::Any;
-        else if(mod=="+")
-            pathMode=PathMode::MoreThanZero;
-        return pathMode ;
+        if (mod == "?")
+            pathMode = PathMode::ZeroOrOne;
+        else if (mod == "*")
+            pathMode = PathMode::Any;
+        else if (mod == "+")
+            pathMode = PathMode::MoreThanZero;
+        return pathMode;
     }
-
 
 
     //partialy done ..check the return type
@@ -347,9 +344,9 @@ public:
 
 
         //visit term
-        if(ctx->graphTerm()!= nullptr)
+        if (ctx->graphTerm() != nullptr)
             return visitGraphTerm(ctx->graphTerm());
-        //visit var
+            //visit var
         else
             return visitVar(ctx->var());
     }
@@ -357,12 +354,10 @@ public:
 
     //Done
     antlrcpp::Any visitVar(Dice::tentris::sparql::parser::SparqlParser::VarContext *ctx) override {
-        if(ctx->VAR1() != nullptr)
-        {
-            return TripleVariable(ctx->VAR1()->getText().substr(1,ctx->VAR1()->getText().length()-1));
-        } else
-        {
-            return TripleVariable(ctx->VAR2()->getText().substr(1,ctx->VAR2()->getText().length()-1));
+        if (ctx->VAR1() != nullptr) {
+            return TripleVariable(ctx->VAR1()->getText().substr(1, ctx->VAR1()->getText().length() - 1));
+        } else {
+            return TripleVariable(ctx->VAR2()->getText().substr(1, ctx->VAR2()->getText().length() - 1));
         }
 
     }
@@ -370,8 +365,8 @@ public:
 
     //Done
     antlrcpp::Any visitGraphTerm(Dice::tentris::sparql::parser::SparqlParser::GraphTermContext *ctx) override {
-        std::string termRaw=ctx->getText();
-        rdf_parser::store::rdf::Term term=rdf_parser::Turtle::parseTerm(termRaw);
+        std::string termRaw = ctx->getText();
+        rdf_parser::store::rdf::Term term = rdf_parser::Turtle::parseTerm(termRaw);
         return term;
     }
 
@@ -402,7 +397,7 @@ private:
 antlrcpp::Any
 QueryGeneratorVisitor::visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) {
     std::vector<std::shared_ptr<AbstractTripleObject>> objects;
-    for(auto& object:ctx->object())
+    for (auto &object:ctx->object())
         objects.push_back(visitObject(object));
     return objects;
 }
@@ -413,18 +408,16 @@ antlrcpp::Any QueryGeneratorVisitor::visitObject(Dice::tentris::sparql::parser::
 
 antlrcpp::Any
 QueryGeneratorVisitor::visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) {
-    if(ctx->varOrTerm()!= nullptr)
-    {
+    if (ctx->varOrTerm() != nullptr) {
         return std::make_shared<SingleTripleObject>(visitVarOrTerm(ctx->varOrTerm()));
-    } else
-    {
+    } else {
         return std::make_shared<CompositeTripleObject>(visitTriplesNode(ctx->triplesNode()));
     }
 }
 
 antlrcpp::Any
 QueryGeneratorVisitor::visitTriplesNode(Dice::tentris::sparql::parser::SparqlParser::TriplesNodeContext *ctx) {
-    if(ctx->collection()!= nullptr)
+    if (ctx->collection() != nullptr)
         return visitCollection(ctx->collection());
     else
         return visitBlankNodePropertyList(ctx->blankNodePropertyList());
