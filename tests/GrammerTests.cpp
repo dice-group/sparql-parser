@@ -3,7 +3,7 @@
 #include <SparqlLexer/SparqlLexer.h>
 #include <SparqlParser/SparqlParser.h>
 
-#include <Dice/Sparql-Query/TripleVariable.hpp>
+#include <Dice/rdf_parser/Sparql/TripleVariable.hpp>
 
 namespace
 {
@@ -43,7 +43,7 @@ TEST(GrammerTests,varOrTermTest) {
     SparqlParser::VarOrTermContext* tree2=parser2->varOrTerm();
 
     QueryGeneratorVisitor visitor;
-    TripleVariable tripleVariable= visitor.visitVarOrTerm(tree1);
+    rdf_parser::SparqlQuery::TripleVariable  tripleVariable= visitor.visitVarOrTerm(tree1);
     Term term= visitor.visitVarOrTerm(tree2);
     ASSERT_EQ(tripleVariable.getName(),"abc");
     ASSERT_EQ(term,Term::make_term(termString));
@@ -64,8 +64,8 @@ TEST(GrammerTests, VarTest) {
     SparqlParser::VarContext* tree2=parser2->var();
 
     QueryGeneratorVisitor visitor;
-    TripleVariable tripleVariable1= visitor.visitVar(tree1);
-    TripleVariable tripleVariable2= visitor.visitVar(tree2);
+    rdf_parser::SparqlQuery::TripleVariable tripleVariable1= visitor.visitVar(tree1);
+    rdf_parser::SparqlQuery::TripleVariable  tripleVariable2= visitor.visitVar(tree2);
     ASSERT_EQ(tripleVariable1.getName(),"abc");
     ASSERT_EQ(tripleVariable2.getName(),"abc");
 
@@ -108,4 +108,17 @@ TEST(GrammerTests, iriTest) {
     Term iri= visitor.visitIri(tree);
     ASSERT_EQ(iri,Term::make_term(iriString));
 
+}
+
+
+SparqlParser* tripleBlock(std::string text)
+{
+    std::string iriString{"?book dc:title ?title ;\n"
+                          "         ns:price ?price ."};
+    SparqlParser*  parser=createParser(iriString);
+    SparqlParser::GroupGraphPatternSubContext* tree=parser->groupGraphPatternSub();
+
+    QueryGeneratorVisitor visitor;
+    std::shared_ptr<ICommandNode> node= visitor.visitGroupGraphPatternSub(tree);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
 }

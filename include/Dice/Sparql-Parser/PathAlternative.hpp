@@ -7,8 +7,7 @@
 
 #include <vector>
 
-#include "PathSequence.hpp"
-
+class PathSequence;
 class PathAlternative {
 private:
     std::vector<PathSequence> sequences;

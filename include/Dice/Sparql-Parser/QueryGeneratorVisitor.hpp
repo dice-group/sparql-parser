@@ -90,12 +90,12 @@ public:
         //deal with node type
         SelectNodeType nodeType;
 
-        if (ctx->selectModifier() != nullptr)
-            nodeType = visitSelectModifier(ctx->selectModifier());
-        else
-            nodeType = SelectNodeType::DEFAULT;
-
-        selectClause.nodeType = nodeType;
+//        if (ctx->selectModifier() != nullptr)
+//            nodeType = visitSelectModifier(ctx->selectModifier());
+//        else
+//            nodeType = SelectNodeType::DEFAULT;
+//
+//        selectClause.nodeType = nodeType;
 
         //ToDo deal with the variables
 
@@ -103,19 +103,19 @@ public:
         return selectClause;
     }
 
-    antlrcpp::Any
-    visitSelectModifier(Dice::tentris::sparql::parser::SparqlParser::SelectModifierContext *ctx) override {
-
-        std::string nodeTypeRaw = ctx->toString();
-        SelectNodeType nodeType;
-        if (nodeTypeRaw == "DISTINCT")
-            nodeType = SelectNodeType::DISTINCT;
-        else if (nodeTypeRaw == "REDUCE")
-            nodeType = SelectNodeType::REDUCED;
-        else
-            throw new ParseException();
-        return nodeType;
-    }
+//    antlrcpp::Any
+//    visitSelectModifier(Dice::tentris::sparql::parser::SparqlParser::SelectModifierContext *ctx) override {
+//
+//        std::string nodeTypeRaw = ctx->toString();
+//        SelectNodeType nodeType;
+//        if (nodeTypeRaw == "DISTINCT")
+//            nodeType = SelectNodeType::DISTINCT;
+//        else if (nodeTypeRaw == "REDUCE")
+//            nodeType = SelectNodeType::REDUCED;
+//        else
+//            throw new ParseException();
+//        return nodeType;
+//    }
 
 
     antlrcpp::Any
@@ -249,13 +249,14 @@ public:
         return visitPathAlternative(ctx->pathAlternative());
     }
 
-    antlrcpp::Any
-    visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
-        std::vector<PathSequence> pathSequences;
-        for (auto sequence:ctx->pathSequence())
-            pathSequences.push_back(visitPathSequence(sequence));
-        return pathSequences;
-    }
+    //ToDo check later
+//    antlrcpp::Any
+//    visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
+//        std::vector<PathSequence> pathSequences;
+//        for (auto sequence:ctx->pathSequence())
+//            pathSequences.push_back(visitPathSequence(sequence));
+//        return pathSequences;
+//    }
 
     antlrcpp::Any visitPathSequence(Dice::tentris::sparql::parser::SparqlParser::PathSequenceContext *ctx) override {
         std::vector<PropertySetElement> elements;
@@ -394,26 +395,29 @@ private:
 
 };
 
-antlrcpp::Any
-QueryGeneratorVisitor::visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) {
-    std::vector<std::shared_ptr<AbstractTripleObject>> objects;
-    for (auto &object:ctx->object())
-        objects.push_back(visitObject(object));
-    return objects;
-}
+//ToDo
+//antlrcpp::Any
+//QueryGeneratorVisitor::visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) {
+//    std::vector<std::shared_ptr<AbstractTripleObject>> objects;
+//    for (auto &object:ctx->object())
+//        objects.push_back(visitObject(object));
+//    return objects;
+//}
 
 antlrcpp::Any QueryGeneratorVisitor::visitObject(Dice::tentris::sparql::parser::SparqlParser::ObjectContext *ctx) {
     return visitGraphNode(ctx->graphNode());
 }
 
-antlrcpp::Any
-QueryGeneratorVisitor::visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) {
-    if (ctx->varOrTerm() != nullptr) {
-        return std::make_shared<SingleTripleObject>(visitVarOrTerm(ctx->varOrTerm()));
-    } else {
-        return std::make_shared<CompositeTripleObject>(visitTriplesNode(ctx->triplesNode()));
-    }
-}
+
+////ToDo
+//antlrcpp::Any
+//QueryGeneratorVisitor::visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) {
+//    if (ctx->varOrTerm() != nullptr) {
+//        return std::make_shared<SingleTripleObject>(visitVarOrTerm(ctx->varOrTerm()));
+//    } else {
+//        return std::make_shared<CompositeTripleObject>(visitTriplesNode(ctx->triplesNode()));
+//    }
+//}
 
 antlrcpp::Any
 QueryGeneratorVisitor::visitTriplesNode(Dice::tentris::sparql::parser::SparqlParser::TriplesNodeContext *ctx) {

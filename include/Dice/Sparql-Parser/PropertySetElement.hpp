@@ -24,7 +24,7 @@ public:
     {
         this->isInversed=isInversed;
     }
-    void setpathMode(pathMode pathMode)
+    void setpathMode(PathMode pathMode)
     {
         this->pathMode=pathMode;
     }
@@ -78,11 +78,11 @@ private:
 
 
 
-class PathNegatedPropertySet :public PropertySetElement
-{
-private:
-    std::vector<SinglePropertySetElement>
-};
+//class PathNegatedPropertySet :public PropertySetElement
+//{
+//private:
+//    std::vector<SinglePropertySetElement>
+//};
 
 
 #endif //SPARQL_PARSER_PROPERTYPATH_HPP
