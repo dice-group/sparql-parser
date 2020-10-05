@@ -110,15 +110,13 @@ TEST(GrammerTests, iriTest) {
 
 }
 
+TEST(GrammerTests, tripleBlockTest) {
+        std::string tripleBlockString{"?book <dc:title> ?title ;\n"
+                              "         <ns:price> ?price ."};
+        SparqlParser *parser = createParser(tripleBlockString);
+        SparqlParser::TriplesBlockContext *tree = parser->triplesBlock();
 
-SparqlParser* tripleBlock(std::string text)
-{
-    std::string iriString{"?book dc:title ?title ;\n"
-                          "         ns:price ?price ."};
-    SparqlParser*  parser=createParser(iriString);
-    SparqlParser::GroupGraphPatternSubContext* tree=parser->groupGraphPatternSub();
-
-    QueryGeneratorVisitor visitor;
-    std::shared_ptr<ICommandNode> node= visitor.visitGroupGraphPatternSub(tree);
-    //ASSERT_EQ(iri,Term::make_term(iriString));
+        QueryGeneratorVisitor visitor;
+        std::shared_ptr<ICommandNode> node = visitor.visitTriplesBlock(tree);
+        //ASSERT_EQ(iri,Term::make_term(iriString));
 }

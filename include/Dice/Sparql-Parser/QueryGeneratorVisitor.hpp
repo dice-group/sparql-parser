@@ -168,11 +168,11 @@ public:
 
         //ToDo
         if (ctx->triplesBlock() != nullptr) {
-
-
+            visitTriplesBlock(ctx->triplesBlock());
         }
 
         for (auto &subList:ctx->groupGraphPatternSubList()) {
+            visitGroupGraphPatternSubList(subList);
             //ToDo
         }
 
@@ -191,22 +191,29 @@ public:
 
         //Deal with the triplesBlock
         if (ctx->triplesBlock() != nullptr) {
-            std::vector<TriplePatternElement> elements;
-//            commandNode = std::make_shared<>()
-            rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->triplesBlock()->getText());
-            auto it = parser.begin();
-            while (it) {
-                //ToDo check this
-                TriplePatternElement  triple= (TriplePatternElement &&) *it;
-                elements.push_back(triple);
-                it++;
-            }
-            commandNode=std::make_shared<TriplePatternNode>(elements);
+            visitTriplesBlock(ctx->triplesBlock());
         }
 
         return commandNode;
     }
 
+    antlrcpp::Any visitTriplesBlock(Dice::tentris::sparql::parser::SparqlParser::TriplesBlockContext *ctx) override {
+        std::shared_ptr<ICommandNode> commandNode;
+        std::vector<TriplePatternElement> elements;
+        rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->getText());
+        auto it = parser.begin();
+        while (it) {
+            //ToDo check this
+            TriplePatternElement  triple= (TriplePatternElement &&) *it;
+            elements.push_back(triple);
+            it++;
+        }
+        commandNode=std::make_shared<TriplePatternNode>(elements);
+        return commandNode;
+    }
+
+
+public:
 
     antlrcpp::Any visitGraphPatternNotTriples(
             Dice::tentris::sparql::parser::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
@@ -225,9 +232,6 @@ public:
 
 
 
-//    antlrcpp::Any visitTriplesBlock(Dice::tentris::sparql::parser::SparqlParser::TriplesBlockContext *ctx) override {
-//        return SparqlBaseVisitor::visitTriplesBlock(ctx);
-//    }
 
 
     antlrcpp::Any visitTriplesSameSubjectPath(
@@ -352,6 +356,8 @@ public:
             return visitVar(ctx->var());
     }
 
+    virtual ~QueryGeneratorVisitor();
+
 
     //Done
     antlrcpp::Any visitVar(Dice::tentris::sparql::parser::SparqlParser::VarContext *ctx) override {
@@ -372,16 +378,14 @@ public:
     }
 
 
-private:
+
     antlrcpp::Any visitVerbSimple(Dice::tentris::sparql::parser::SparqlParser::VerbSimpleContext *ctx) override {
         return visitVar(ctx->var());
     }
 
-    antlrcpp::Any visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) override;
 
     antlrcpp::Any visitObject(Dice::tentris::sparql::parser::SparqlParser::ObjectContext *ctx) override;
 
-    antlrcpp::Any visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) override;
 
     antlrcpp::Any visitTriplesNode(Dice::tentris::sparql::parser::SparqlParser::TriplesNodeContext *ctx) override;
 
@@ -441,5 +445,11 @@ antlrcpp::Any QueryGeneratorVisitor::visitPropertyListNotEmpty(
         Dice::tentris::sparql::parser::SparqlParser::PropertyListNotEmptyContext *ctx) {
     return SparqlParserBaseVisitor::visitPropertyListNotEmpty(ctx);
 }
+
+QueryGeneratorVisitor::~QueryGeneratorVisitor() {
+
+}
+
+
 
 #endif //SPARQL_PARSER_QUERYGENERATORVISITOR_HPP
