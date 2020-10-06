@@ -120,3 +120,18 @@ TEST(GrammerTests, tripleBlockTest) {
         std::shared_ptr<ICommandNode> node = visitor.visitTriplesBlock(tree);
         //ASSERT_EQ(iri,Term::make_term(iriString));
 }
+
+TEST(GrammerTests, BasicSelectQueryTest) {
+    std::string query{
+                      "SELECT ?book ?nameY ?nickY\n"
+                      "WHERE\n"
+                      "  { ?book <dc:title> ?title ;\n"
+            "         <ns:price> ?price ."
+                      "  }"};
+    SparqlParser *parser = createParser(query);
+    SparqlParser::SelectQueryContext *tree = parser->selectQuery();
+
+    QueryGeneratorVisitor visitor;
+    std::shared_ptr<ICommandNode> node = visitor.visitSelectQuery(tree);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}

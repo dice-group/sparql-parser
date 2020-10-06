@@ -80,6 +80,8 @@ public:
         else
             selectNode = std::make_shared<DefaultSelectNode>(queryNode);
 
+       // selectQuery=std::make_shared<selectQuery>(selectNode);
+
     }
 
 
@@ -90,12 +92,12 @@ public:
         //deal with node type
         SelectNodeType nodeType;
 
-//        if (ctx->selectModifier() != nullptr)
-//            nodeType = visitSelectModifier(ctx->selectModifier());
-//        else
-//            nodeType = SelectNodeType::DEFAULT;
-//
-//        selectClause.nodeType = nodeType;
+        if (ctx->selectModifier() != nullptr)
+            nodeType = visitSelectModifier(ctx->selectModifier());
+        else
+            nodeType = SelectNodeType::DEFAULT;
+
+        selectClause.nodeType = nodeType;
 
         //ToDo deal with the variables
 
@@ -103,19 +105,19 @@ public:
         return selectClause;
     }
 
-//    antlrcpp::Any
-//    visitSelectModifier(Dice::tentris::sparql::parser::SparqlParser::SelectModifierContext *ctx) override {
-//
-//        std::string nodeTypeRaw = ctx->toString();
-//        SelectNodeType nodeType;
-//        if (nodeTypeRaw == "DISTINCT")
-//            nodeType = SelectNodeType::DISTINCT;
-//        else if (nodeTypeRaw == "REDUCE")
-//            nodeType = SelectNodeType::REDUCED;
-//        else
-//            throw new ParseException();
-//        return nodeType;
-//    }
+    antlrcpp::Any
+    visitSelectModifier(Dice::tentris::sparql::parser::SparqlParser::SelectModifierContext *ctx) override {
+
+        std::string nodeTypeRaw = ctx->toString();
+        SelectNodeType nodeType;
+        if (nodeTypeRaw == "DISTINCT")
+            nodeType = SelectNodeType::DISTINCT;
+        else if (nodeTypeRaw == "REDUCE")
+            nodeType = SelectNodeType::REDUCED;
+        else
+            throw new ParseException();
+        return nodeType;
+    }
 
 
     antlrcpp::Any
@@ -152,7 +154,6 @@ public:
     visitGroupGraphPattern(Dice::tentris::sparql::parser::SparqlParser::GroupGraphPatternContext *ctx) override {
         std::shared_ptr<ICommandNode> commandNode;
 
-        //ToDo
         if (ctx->subSelect() != nullptr)
             commandNode = visitSubSelect(ctx->subSelect());
         else
@@ -168,13 +169,16 @@ public:
 
         //ToDo
         if (ctx->triplesBlock() != nullptr) {
-            visitTriplesBlock(ctx->triplesBlock());
+            //ToDo
+            std::shared_ptr<ICommandNode> triplesNode=visitTriplesBlock(ctx->triplesBlock());
+            commandNode=triplesNode;
         }
 
         for (auto &subList:ctx->groupGraphPatternSubList()) {
-            visitGroupGraphPatternSubList(subList);
             //ToDo
+            visitGroupGraphPatternSubList(subList);
         }
+
 
         return commandNode;
 
@@ -186,11 +190,12 @@ public:
 
         std::shared_ptr<ICommandNode> commandNode;
 
-        //Deal with the graphPatternNotTriples
         //ToDo
+        visitGraphPatternNotTriples(ctx->graphPatternNotTriples());
 
         //Deal with the triplesBlock
         if (ctx->triplesBlock() != nullptr) {
+            //ToDo
             visitTriplesBlock(ctx->triplesBlock());
         }
 
@@ -200,6 +205,7 @@ public:
     antlrcpp::Any visitTriplesBlock(Dice::tentris::sparql::parser::SparqlParser::TriplesBlockContext *ctx) override {
         std::shared_ptr<ICommandNode> commandNode;
         std::vector<TriplePatternElement> elements;
+        std::string tb=ctx->getText();
         rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->getText());
         auto it = parser.begin();
         while (it) {
@@ -220,11 +226,46 @@ public:
 
         std::shared_ptr<ICommandNode> commandNode;
 
-        //ToDo
-        if (ctx->optionalGraphPattern() != nullptr) {
+        if (ctx->groupOrUnionGraphPattern() != nullptr) {
 
         }
-        //ToDo deal with the remaining types
+
+        else if (ctx->optionalGraphPattern() != nullptr)
+        {
+            commandNode=visitOptionalGraphPattern(ctx->optionalGraphPattern());
+        }
+
+        else if (ctx->minusGraphPattern() != nullptr)
+        {
+
+        }
+
+        else if (ctx->graphGraphPattern() != nullptr)
+        {
+
+        }
+
+        else if (ctx->serviceGraphPattern() != nullptr)
+        {
+
+        }
+
+        else if (ctx->filter() != nullptr)
+        {
+
+        }
+
+        else if (ctx->bind() != nullptr)
+        {
+
+        }
+
+        // else inlineData
+        else
+        {
+
+        }
+
 
 
         return commandNode;
