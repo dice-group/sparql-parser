@@ -10,6 +10,7 @@
 struct SelectClause
 {
     SelectNodeType nodeType;
+    std::vector<TripleVariable> selectVariables;
 
 };
 

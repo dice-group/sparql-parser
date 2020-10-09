@@ -81,8 +81,9 @@ public:
         else
             selectNode = std::make_shared<DefaultSelectNode>(queryNode);
 
+
         //create the select query
-        selectQuery=std::make_shared<SelectQuery>(selectNode);
+        selectQuery=std::make_shared<SelectQuery>(selectNode,clause.selectVariables);
 
         return selectQuery;
 
@@ -103,8 +104,13 @@ public:
 
         selectClause.nodeType = nodeType;
 
-        //ToDo deal with the variables
-
+        //deal with the variables
+        std::vector<TripleVariable> selectVariables;
+        for(auto selectVariable:ctx->selectVariables())
+        {
+            selectVariables.push_back(TripleVariable(selectVariable->getText()));
+        }
+        selectClause.selectVariables=selectVariables;
 
         return selectClause;
     }
