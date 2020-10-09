@@ -118,11 +118,11 @@ public:
     antlrcpp::Any
     visitSelectModifier(Dice::tentris::sparql::parser::SparqlParser::SelectModifierContext *ctx) override {
 
-        std::string nodeTypeRaw = ctx->toString();
+        std::string nodeTypeRaw = ctx->getText();
         SelectNodeType nodeType;
         if (nodeTypeRaw == "DISTINCT")
             nodeType = SelectNodeType::DISTINCT;
-        else if (nodeTypeRaw == "REDUCE")
+        else if (nodeTypeRaw == "REDUCED")
             nodeType = SelectNodeType::REDUCED;
         else
             throw new ParseException();

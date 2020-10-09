@@ -121,7 +121,7 @@ TEST(GrammerTests, tripleBlockTest) {
         //ASSERT_EQ(iri,Term::make_term(iriString));
 }
 
-TEST(GrammerTests, BasicSelectQueryTest) {
+TEST(GrammerTests, BasicSelectQueryDefaultTest) {
     std::string query{
                       "SELECT ?book ?nameY ?nickY\n"
                       "WHERE\n"
@@ -132,7 +132,48 @@ TEST(GrammerTests, BasicSelectQueryTest) {
     SparqlParser::QueryContext *tree = parser->query();
 
     QueryGeneratorVisitor visitor;
-    std::shared_ptr<SelectQuery> node = visitor.visitQuery(tree);
+    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
+//    selectQuery->executeQuery();
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}
+
+TEST(GrammerTests, BasicSelectQueryDistinctTest) {
+    std::string query{
+            "SELECT DISTINCT ?book ?nameY ?nickY\n"
+            "WHERE\n"
+            "  { ?book <dc:title> ?title ;\n"
+            "         <ns:price> ?price ."
+            "  }"};
+    SparqlParser *parser = createParser(query);
+    SparqlParser::QueryContext *tree = parser->query();
+
+    QueryGeneratorVisitor visitor;
+    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
+//    selectQuery->executeQuery();
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}
+
+TEST(GrammerTests, BasicSelectQueryReducedTest) {
+    std::string query{
+            "SELECT REDUCED ?book ?nameY ?nickY\n"
+            "WHERE\n"
+            "  { ?book <dc:title> ?title ;\n"
+            "         <ns:price> ?price ."
+            "  }"};
+    SparqlParser *parser = createParser(query);
+    SparqlParser::QueryContext *tree = parser->query();
+
+    QueryGeneratorVisitor visitor;
+    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
+//    selectQuery->executeQuery();
+
+
     ASSERT_EQ(true,true);
     //ASSERT_EQ(iri,Term::make_term(iriString));
 }
