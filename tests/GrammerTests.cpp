@@ -129,9 +129,10 @@ TEST(GrammerTests, BasicSelectQueryTest) {
             "         <ns:price> ?price ."
                       "  }"};
     SparqlParser *parser = createParser(query);
-    SparqlParser::SelectQueryContext *tree = parser->selectQuery();
+    SparqlParser::QueryContext *tree = parser->query();
 
     QueryGeneratorVisitor visitor;
-    std::shared_ptr<ICommandNode> node = visitor.visitSelectQuery(tree);
+    std::shared_ptr<SelectQuery> node = visitor.visitQuery(tree);
+    ASSERT_EQ(true,true);
     //ASSERT_EQ(iri,Term::make_term(iriString));
 }

@@ -36,6 +36,7 @@ public:
 
 
     antlrcpp::Any visitQuery(Dice::tentris::sparql::parser::SparqlParser::QueryContext *ctx) override {
+        //For now the parser supports only Select queries.
         return visitSelectQuery(ctx->selectQuery());
     }
 
@@ -80,7 +81,10 @@ public:
         else
             selectNode = std::make_shared<DefaultSelectNode>(queryNode);
 
-       // selectQuery=std::make_shared<selectQuery>(selectNode);
+        //create the select query
+        selectQuery=std::make_shared<SelectQuery>(selectNode);
+
+        return selectQuery;
 
     }
 
