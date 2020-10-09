@@ -36,8 +36,13 @@ public:
 
 
     antlrcpp::Any visitQuery(Dice::tentris::sparql::parser::SparqlParser::QueryContext *ctx) override {
-        //For now the parser supports only Select queries.
-        return visitSelectQuery(ctx->selectQuery());
+
+        //For now the parser only supports Select queries.
+        if(ctx->selectQuery()!=NULL)
+            return visitSelectQuery(ctx->selectQuery());
+        else
+            return NotImplementedException();
+
     }
 
 
@@ -68,22 +73,24 @@ public:
                 solutionDecorator = std::make_shared<SolutionDecorator>(solutionDecorator, solutionModifier);
 
             queryNode = solutionDecorator;
-        } else
+        }
+        else
             queryNode = commandNode;
 
+        //deal with the SelectClause to define the SelectNode Type(Distinct,Reduced,Default) and to get the select variables
         SelectClause clause = visitSelectClause(ctx->selectClause());
 
         //create the selectNode
         if (clause.nodeType == SelectNodeType::DISTINCT)
-            selectNode = std::make_shared<DistinctSelectNode>(queryNode);
+            selectNode = std::make_shared<DistinctSelectNode>(queryNode,clause.selectVariables);
         else if (clause.nodeType == SelectNodeType::REDUCED)
-            selectNode = std::make_shared<ReducedSelectNode>(queryNode);
+            selectNode = std::make_shared<ReducedSelectNode>(queryNode,clause.selectVariables);
         else
-            selectNode = std::make_shared<DefaultSelectNode>(queryNode);
+            selectNode = std::make_shared<DefaultSelectNode>(queryNode,clause.selectVariables);
 
 
         //create the select query
-        selectQuery=std::make_shared<SelectQuery>(selectNode,clause.selectVariables);
+        selectQuery=std::make_shared<SelectQuery>(selectNode);
 
         return selectQuery;
 
@@ -228,8 +235,6 @@ public:
         return commandNode;
     }
 
-
-public:
 
     antlrcpp::Any visitGraphPatternNotTriples(
             Dice::tentris::sparql::parser::SparqlParser::GraphPatternNotTriplesContext *ctx) override {

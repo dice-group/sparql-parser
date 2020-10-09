@@ -13,4 +13,10 @@ class ParseException :public std::exception
 };
 
 
+class NotImplementedException :public std::exception
+{
+
+};
+
+
 #endif //SPARQL_PARSER_EXCEPTIONS_HPP
