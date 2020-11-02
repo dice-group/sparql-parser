@@ -311,7 +311,7 @@ public:
 
     //ToDo check later
 //    antlrcpp::Any
-//    visitPathAlternative(Dice::tentris::sparql::parser::SparqlParser::PathAlternativeContext *ctx) override {
+//    visitPathAlternative(Dice::tentris::sparql::parser::Parser::PathAlternativeContext *ctx) override {
 //        std::vector<PathSequence> pathSequences;
 //        for (auto sequence:ctx->pathSequence())
 //            pathSequences.push_back(visitPathSequence(sequence));
@@ -457,7 +457,7 @@ public:
 
 //ToDo
 //antlrcpp::Any
-//QueryGeneratorVisitor::visitObjectList(Dice::tentris::sparql::parser::SparqlParser::ObjectListContext *ctx) {
+//QueryGeneratorVisitor::visitObjectList(Dice::tentris::sparql::parser::Parser::ObjectListContext *ctx) {
 //    std::vector<std::shared_ptr<AbstractTripleObject>> objects;
 //    for (auto &object:ctx->object())
 //        objects.push_back(visitObject(object));
@@ -471,7 +471,7 @@ antlrcpp::Any QueryGeneratorVisitor::visitObject(Dice::tentris::sparql::parser::
 
 ////ToDo
 //antlrcpp::Any
-//QueryGeneratorVisitor::visitGraphNode(Dice::tentris::sparql::parser::SparqlParser::GraphNodeContext *ctx) {
+//QueryGeneratorVisitor::visitGraphNode(Dice::tentris::sparql::parser::Parser::GraphNodeContext *ctx) {
 //    if (ctx->varOrTerm() != nullptr) {
 //        return std::make_shared<SingleTripleObject>(visitVarOrTerm(ctx->varOrTerm()));
 //    } else {

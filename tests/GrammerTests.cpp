@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <Dice/Sparql-Parser/QueryGeneratorVisitor.hpp>
+#include <Dice/Sparql-Parser/internal/QueryGeneratorVisitor.hpp>
 #include <SparqlLexer/SparqlLexer.h>
 #include <SparqlParser/SparqlParser.h>
 

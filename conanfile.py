@@ -12,18 +12,22 @@ class sparqlParserBase(ConanFile):
     topics = "SPARQL", "parser", "semantic web"
     settings = "os", "compiler", "build_type", "arch"
     requires="sparql-parser-base/0.1.1@dice-group/stable","sparql-queryGraph/0.9@dice-group/stable","rdf-parser/0.11@dice-group/stable","gtest/1.8.1@bincrafters/stable"
-    generators = "cmake"
+    generators = "cmake", "cmake_find_package", "cmake_paths"
     exports = "LICENSE.txt"
     exports_sources = (
         "CMakeLists.txt",
-        "cmake/*")
+        "cmake/*",
+         "include/*")
     no_copy_source = True
 
     def package(self):
         cmake = CMake(self)
+        cmake.definitions["rdf_parser_BUILD_TESTS"] = "OFF"
         cmake.configure()
         cmake.install()
-        self.copy("*.a", dst="lib", keep_path=False)
+
+    def package_id(self):
+        self.info.header_only()
 
     def imports(self):
         self.copy("license*", dst="licenses", folder=True, ignore_case=True)
