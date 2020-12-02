@@ -5,35 +5,28 @@
 #include "Dice/Sparql-Parser/internal/QueryGeneratorVisitor.hpp"
 #include <SparqlLexer/SparqlLexer.h>
 
-namespace
-{
-    using namespace Dice::tentris::sparql::parser;
+namespace SparqlParser {
+    class Parser {
+
+    private:
+        static Dice::tentris::SparqlParserBase::SparqlParser *createParser(std::string text) {
+            antlr4::ANTLRInputStream *input = new antlr4::ANTLRInputStream(text);
+            Dice::tentris::SparqlParserBase::SparqlLexer *lexer = new Dice::tentris::SparqlParserBase::SparqlLexer(input);
+            antlr4::CommonTokenStream *tokens = new antlr4::CommonTokenStream(lexer);
+            Dice::tentris::SparqlParserBase::SparqlParser *parser = new Dice::tentris::SparqlParserBase::SparqlParser(tokens);
+            return parser;
+        }
+
+    public:
+        static std::shared_ptr<SelectQuery> parseSelectQuery(std::string query) {
+            Dice::tentris::SparqlParserBase::SparqlParser *parser = createParser(query);
+            Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
+
+            internal::QueryGeneratorVisitor visitor;
+            std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
+            return selectQuery;
+        }
+    };
 }
-
-class Parser
-{
-
-private:
-    static SparqlParser* createParser(std::string text)
-    {
-        antlr4::ANTLRInputStream* input=new antlr4::ANTLRInputStream(text);
-        SparqlLexer* lexer=new SparqlLexer(input);
-        antlr4::CommonTokenStream* tokens=new antlr4::CommonTokenStream(lexer);
-        SparqlParser* parser=new  SparqlParser(tokens);
-        return parser;
-    }
-
-public:
-    static std::shared_ptr<SelectQuery> parseSelectQuery(std::string query)
-    {
-        SparqlParser *parser = createParser(query);
-        SparqlParser::QueryContext *tree = parser->query();
-
-        QueryGeneratorVisitor visitor;
-        std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-        return selectQuery;
-    }
-};
-
 
 #endif //SPARQL_PARSER_PARSER_HPP

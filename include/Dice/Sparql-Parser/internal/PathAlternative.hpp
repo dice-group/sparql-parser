@@ -7,10 +7,12 @@
 
 #include <vector>
 
-class PathSequence;
-class PathAlternative {
-private:
-    std::vector<PathSequence> sequences;
-};
+namespace SparqlParser::internal {
+    class PathSequence;
 
+    class PathAlternative {
+    private:
+        std::vector<PathSequence> sequences;
+    };
+}
 #endif //SPARQL_PARSER_PATHALTERNATIVE_HPP

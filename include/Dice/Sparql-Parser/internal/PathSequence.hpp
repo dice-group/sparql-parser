@@ -9,12 +9,12 @@
 
 #include "PropertySetElement.hpp"
 
-class PathSequence
-{
-private:
-    std::vector<PropertySetElement> elements;
+namespace SparqlParser::internal {
+    class PathSequence {
+    private:
+        std::vector<PropertySetElement> elements;
 
-};
-
+    };
+}
 
 #endif //SPARQL_PARSER_PATHSEQUENCE_HPP

@@ -4,11 +4,11 @@
 
 #ifndef SPARQL_PARSER_SELECTNODETYPE_HPP
 #define SPARQL_PARSER_SELECTNODETYPE_HPP
-
-enum SelectNodeType{
-    DEFAULT,
-    DISTINCT,
-    REDUCED
-};
-
+namespace SparqlParser::internal {
+    enum SelectNodeType {
+        DEFAULT,
+        DISTINCT,
+        REDUCED
+    };
+}
 #endif //SPARQL_PARSER_SELECTNODETYPE_HPP

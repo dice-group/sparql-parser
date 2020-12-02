@@ -11,72 +11,69 @@
 
 #include "PathAlternative.hpp"
 
-class PropertySetElement
-{
-private:
-    bool isInversed;
-    PathMode pathMode;
+namespace SparqlParser::internal {
+    class PropertySetElement {
+    private:
+        bool isInversed;
+        PathMode pathMode;
 
-public:
-    PropertySetElement(bool isInversed,PathMode pathMode):isInversed(isInversed),pathMode(pathMode){};
+    public:
+        PropertySetElement(bool isInversed, PathMode pathMode) : isInversed(isInversed), pathMode(pathMode) {};
 
-    void setIsInversed(bool isInversed)
-    {
-        this->isInversed=isInversed;
-    }
-    void setpathMode(PathMode pathMode)
-    {
-        this->pathMode=pathMode;
-    }
-};
+        void setIsInversed(bool isInversed) {
+            this->isInversed = isInversed;
+        }
 
+        void setpathMode(PathMode pathMode) {
+            this->pathMode = pathMode;
+        }
+    };
 
 
-class SinglePropertySetElement :public PropertySetElement
-{
-public:
-    SinglePropertySetElement(bool isInversed,PathMode pathMode):PropertySetElement(isInversed,pathMode){};
-};
+    class SinglePropertySetElement : public PropertySetElement {
+    public:
+        SinglePropertySetElement(bool isInversed, PathMode pathMode) : PropertySetElement(isInversed, pathMode) {};
+    };
 
 
+    class IriPropertySetElement : public SinglePropertySetElement {
+    private:
+        rdf_parser::store::rdf::URIRef iri;
+
+    public:
+        IriPropertySetElement(rdf_parser::store::rdf::URIRef iri, bool isInversed, PathMode pathMode)
+                : SinglePropertySetElement(isInversed, pathMode), iri(iri) {};
+
+        IriPropertySetElement(rdf_parser::store::rdf::URIRef iri, bool isInversed) : SinglePropertySetElement(
+                isInversed, PathMode::None), iri(iri) {};
+
+        IriPropertySetElement(rdf_parser::store::rdf::URIRef iri) : SinglePropertySetElement(false, PathMode::None),
+                                                                    iri(iri) {};
+
+        IriPropertySetElement(rdf_parser::store::rdf::URIRef iri, PathMode pathMode) : SinglePropertySetElement(false,
+                                                                                                                pathMode),
+                                                                                       iri(iri) {};
+    };
 
 
-class IriPropertySetElement:public SinglePropertySetElement
-{
-private:
-    rdf_parser::store::rdf::URIRef iri;
+    class APropertySetElement : public SinglePropertySetElement {
 
-public:
-    IriPropertySetElement(rdf_parser::store::rdf::URIRef iri,bool isInversed,PathMode pathMode):SinglePropertySetElement(isInversed,pathMode),iri(iri){};
+    public:
+        APropertySetElement(bool isInversed, PathMode pathMode) : SinglePropertySetElement(isInversed, pathMode) {};
 
-    IriPropertySetElement(rdf_parser::store::rdf::URIRef iri,bool isInversed):SinglePropertySetElement(isInversed,PathMode::None),iri(iri){};
+        APropertySetElement(PathMode pathMode) : SinglePropertySetElement(false, pathMode) {};
 
-    IriPropertySetElement(rdf_parser::store::rdf::URIRef iri):SinglePropertySetElement(false,PathMode::None),iri(iri){};
-
-    IriPropertySetElement(rdf_parser::store::rdf::URIRef iri,PathMode pathMode):SinglePropertySetElement(false,pathMode),iri(iri){};
-};
+        APropertySetElement(bool isInversed) : SinglePropertySetElement(isInversed, PathMode::None) {};
+    };
 
 
+    class Path : public PropertySetElement {
+    private:
+        PathAlternative alternative;
 
+    };
 
-class APropertySetElement:public SinglePropertySetElement
-{
-
-public:
-    APropertySetElement(bool isInversed,PathMode pathMode):SinglePropertySetElement(isInversed,pathMode){};
-    APropertySetElement(PathMode pathMode):SinglePropertySetElement(false,pathMode){};
-    APropertySetElement(bool isInversed):SinglePropertySetElement(isInversed,PathMode::None){};
-};
-
-
-class Path:public PropertySetElement
-{
-private:
-    PathAlternative alternative;
-
-};
-
-
+}
 
 //class PathNegatedPropertySet :public PropertySetElement
 //{

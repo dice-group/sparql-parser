@@ -5,6 +5,9 @@
 #ifndef SPARQL_PARSER_PATHMODE_HPP
 #define SPARQL_PARSER_PATHMODE_HPP
 
-enum PathMode{None,ZeroOrOne,Any,MoreThanZero};
-
+namespace SparqlParser::internal {
+    enum PathMode {
+        None, ZeroOrOne, Any, MoreThanZero
+    };
+}
 #endif //SPARQL_PARSER_PATHMODE_HPP

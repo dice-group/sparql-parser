@@ -7,11 +7,11 @@
 
 #include "SelectNodeType.hpp"
 
-struct SelectClause
-{
-    SelectNodeType nodeType;
-    std::vector<TripleVariable> selectVariables;
+namespace SparqlParser::internal {
+    struct SelectClause {
+        SelectNodeType nodeType;
+        std::vector<TripleVariable> selectVariables;
 
-};
-
+    };
+}
 #endif //SPARQL_PARSER_SELECTCLAUSE_HPP
