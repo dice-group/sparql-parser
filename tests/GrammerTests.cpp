@@ -197,3 +197,24 @@ TEST(GrammerTests, BasicOptionalSelectQueryReducedTest) {
     ASSERT_EQ(true,true);
     //ASSERT_EQ(iri,Term::make_term(iriString));
 }
+
+TEST(GrammerTests, ComplexOptionalSelectQueryReducedTest) {
+    std::string query{
+            "SELECT REDUCED ?book ?nameY ?nickY\n"
+            "WHERE\n"
+            "  { ?book <dc:title> ?title ;\n"
+            "          <ns:price> ?price ."
+            "OPTIONAL { ?book <dc:author> <dc:title> \n"
+            "  OPTIONAL { ?book <dc:isbn> ?isbn. } \n } \n"
+            "  }"};
+    SparqlParserBase::SparqlParser *parser = createParser(query);
+    SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
+
+    SparqlParser::internal::QueryGeneratorVisitor visitor;
+    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
+//    selectQuery->executeQuery();
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}

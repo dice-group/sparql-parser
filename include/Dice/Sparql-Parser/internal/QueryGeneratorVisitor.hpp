@@ -19,8 +19,8 @@
 #include <Dice/Sparql-Query/QueryNodes/leafNodes/TriplePatternNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SolutionDecorator.hpp>
 #include <Dice/Sparql-Query/TriplePatternElement.hpp>
-#include <Dice/Sparql-Query/QueryNodes/GroupNodes/OptionalPatternNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/GroupNodes/GroupPatternNode.hpp>
+#include <Dice/Sparql-Query/QueryNodes/SpecialNodes/OptionalPatternNode.hpp>
+#include <Dice/Sparql-Query/QueryNodes/GroupNode.hpp>
 
 #include <Dice/rdf_parser/RDF/Term.hpp>
 
@@ -186,18 +186,25 @@ namespace SparqlParser::internal {
                 Dice::tentris::SparqlParserBase::SparqlParser::GroupGraphPatternSubContext *ctx) override {
 
             std::shared_ptr<ICommandNode> commandNode;
-            std::shared_ptr<GroupPatternNode> groupNode = std::make_shared<GroupPatternNode>();
 
-            //ToDo
-            if (ctx->triplesBlock() != nullptr) {
-                groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
+            if(ctx->groupGraphPatternSubList().empty()){
+                if (ctx->triplesBlock() != nullptr) {
+                    commandNode=visitTriplesBlock(ctx->triplesBlock());
+                }
             }
-
-            for (auto &subList:ctx->groupGraphPatternSubList()) {
-                //ToDo
-                groupNode->addChild(visitGroupGraphPatternSubList(subList));
+            else{
+                if((ctx->triplesBlock() == nullptr)&&(ctx->groupGraphPatternSubList().size()==1)){
+                    commandNode=visitGroupGraphPatternSubList(ctx->groupGraphPatternSubList()[0]);
+                }
+                else{
+                std::shared_ptr<GroupNode> groupNode = std::make_shared<GroupNode>();
+                if (ctx->triplesBlock() != nullptr)
+                    groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
+                for (auto &subList:ctx->groupGraphPatternSubList())
+                    groupNode->addChild(visitGroupGraphPatternSubList(subList));
+                commandNode = std::dynamic_pointer_cast<ICommandNode>(groupNode);
+                }
             }
-            commandNode = std::dynamic_pointer_cast<ICommandNode>(groupNode);
             return commandNode;
 
         }
@@ -211,8 +218,7 @@ namespace SparqlParser::internal {
 
             //Deal with the triplesBlock
             if (ctx->triplesBlock() != nullptr) {
-                //ToDo
-                std::shared_ptr<GroupPatternNode> groupNode = std::make_shared<GroupPatternNode>();
+                std::shared_ptr<GroupNode> groupNode = std::make_shared<GroupNode>();
                 groupNode->addChild(visitGraphPatternNotTriples(ctx->graphPatternNotTriples()));
                 groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
                 commandNode = std::dynamic_pointer_cast<ICommandNode>(groupNode);
@@ -273,8 +279,8 @@ namespace SparqlParser::internal {
         antlrcpp::Any visitOptionalGraphPattern(
                 Dice::tentris::SparqlParserBase::SparqlParser::OptionalGraphPatternContext *ctx) override
         {
-            std::shared_ptr<GroupNode> optionalNode=std::make_shared<OptionalPatternNode>();
-            optionalNode->addChild(visitGroupGraphPattern(ctx->groupGraphPattern()));
+            std::shared_ptr<ICommandNode> node=visitGroupGraphPattern(ctx->groupGraphPattern());
+            std::shared_ptr<OptionalPatternNode> optionalNode=std::make_shared<OptionalPatternNode>(node);
             std::shared_ptr<ICommandNode> commandNode=std::dynamic_pointer_cast<ICommandNode>(optionalNode);
             return commandNode;
 
