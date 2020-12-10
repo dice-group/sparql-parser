@@ -2,7 +2,7 @@
 #include <Dice/Sparql-Parser/internal/QueryGeneratorVisitor.hpp>
 #include <SparqlLexer/SparqlLexer.h>
 #include <SparqlParser/SparqlParser.h>
-
+#include <Dice/Sparql-Parser/Parser.hpp>
 #include <Dice/rdf_parser/Sparql/TripleVariable.hpp>
 
 namespace
@@ -204,15 +204,15 @@ TEST(GrammerTests, ComplexOptionalSelectQueryReducedTest) {
             "WHERE\n"
             "  { ?book <dc:title> ?title ;\n"
             "          <ns:price> ?price ."
-            "OPTIONAL { ?book <dc:author> <dc:title> \n"
+            "OPTIONAL { ?book <dc:author> <dc:title> "
             "  OPTIONAL { ?book <dc:isbn> ?isbn. } \n } \n"
             "  }"};
-    SparqlParserBase::SparqlParser *parser = createParser(query);
-    SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
 
-    SparqlParser::internal::QueryGeneratorVisitor visitor;
-    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-//    selectQuery->executeQuery();
+    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectQuery->generateOperands();
+    auto bgps=selectQuery->getBgps();
+    auto  prefixes=selectQuery->getPrefixes();
+
 
 
     ASSERT_EQ(true,true);

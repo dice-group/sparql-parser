@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <vector>
-
+#include <map>
 
 #include <SparqlParser/SparqlParserBaseVisitor.h>
 
@@ -25,7 +25,6 @@
 #include <Dice/rdf_parser/RDF/Term.hpp>
 
 #include <Dice/rdf_parser/Parser/Turtle/Parsers/StringParser.hpp>
-#include <Dice/rdf_parser/Sparql/TriplePatternElement.hpp>
 
 
 #include "SelectNodeType.hpp"
@@ -35,23 +34,50 @@
 
 namespace SparqlParser::internal {
     class QueryGeneratorVisitor : Dice::tentris::SparqlParserBase::SparqlParserBaseVisitor {
+
+    private:
+        std::map<std::string,std::string> prefixes;
+
     public:
 
 
         antlrcpp::Any visitQuery(Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *ctx) override {
 
+            //get the prefiexes
+            prefixes=static_cast<std::map<std::string,std::string>>(visitPrologue(ctx->prologue()));
+
             //For now the parser only supports Select queries.
-            if (ctx->selectQuery() != NULL)
-                return visitSelectQuery(ctx->selectQuery());
+            if (ctx->selectQuery() != NULL) {
+                std::shared_ptr<AbstractSelectNode> selectNode= visitSelectQuery(ctx->selectQuery());
+                //create the select query
+                std::shared_ptr<SelectQuery> selectQuery = std::make_shared<SelectQuery>(selectNode,prefixes);
+                return selectQuery;
+            }
             else
                 return NotImplementedException();
 
         }
 
+    public:
+
+        antlrcpp::Any visitPrologue(Dice::tentris::SparqlParserBase::SparqlParser::PrologueContext *ctx) override{
+            std::map<std::string,std::string> prefixes;
+            if(ctx->baseDecl(0) != nullptr) {
+                prefixes["Base"] = ctx->baseDecl(0)->IRIREF()->getText();
+                prefixes["base"] = prefixes["Base"];
+                prefixes[""] = prefixes["Base"];
+            }
+            for(auto prefixStatement:ctx->prefixDecl())
+            {
+                std::string pname=prefixStatement->PNAME_NS()->getText();
+                std::string iriRef=prefixStatement->IRIREF()->getText();
+                prefixes[pname]=std::string(iriRef,1,iriRef.size() - 2);
+            }
+            return prefixes;
+        }
 
         antlrcpp::Any visitSelectQuery(Dice::tentris::SparqlParserBase::SparqlParser::SelectQueryContext *ctx) override {
 
-            std::shared_ptr<SelectQuery> selectQuery;
             std::shared_ptr<AbstractSelectNode> selectNode;
             std::shared_ptr<IQueryNode> queryNode;
 
@@ -90,11 +116,7 @@ namespace SparqlParser::internal {
             else
                 selectNode = std::make_shared<DefaultSelectNode>(queryNode, clause.selectVariables);
 
-
-            //create the select query
-            selectQuery = std::make_shared<SelectQuery>(selectNode);
-
-            return selectQuery;
+            return selectNode;
 
         }
 
@@ -233,7 +255,7 @@ namespace SparqlParser::internal {
             std::shared_ptr<ICommandNode> commandNode;
             std::vector<TriplePatternElement> elements;
             std::string tb = ctx->getText();
-            rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->getText());
+            rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->getText(),prefixes);
             auto it = parser.begin();
             while (it) {
                 //ToDo check this
