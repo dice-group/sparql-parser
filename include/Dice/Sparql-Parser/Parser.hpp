@@ -19,7 +19,7 @@ namespace SparqlParser {
         }
 
     public:
-        static std::shared_ptr<SelectQuery> parseSelectQuery(std::string query) {
+        static std::shared_ptr<SelectNode> parseSelectQuery(std::string query) {
 
             Dice::tentris::SparqlParserBase::SparqlParser *parser;
             Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *tree;
@@ -31,8 +31,8 @@ namespace SparqlParser {
                 std::cout<<exception.what()<<std::endl;
             }
             internal::QueryGeneratorVisitor visitor;
-            std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-            return selectQuery;
+            std::shared_ptr<SelectNode> selectNode = visitor.visitQuery(tree);
+            return selectNode;
 
         }
     };

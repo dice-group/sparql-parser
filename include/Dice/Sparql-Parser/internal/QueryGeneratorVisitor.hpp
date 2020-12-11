@@ -11,8 +11,7 @@
 
 #include <SparqlParser/SparqlParserBaseVisitor.h>
 
-#include <Dice/Sparql-Query/SelectQuery.hpp>
-#include <Dice/Sparql-Query/QueryNodes/SelectNodes/AbstractSelectNode.hpp>
+#include <Dice/Sparql-Query/QueryNodes/SelectNodes/SelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DefaultSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DistinctSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/ReducedSelectNode.hpp>
@@ -48,10 +47,9 @@ namespace SparqlParser::internal {
 
             //For now the parser only supports Select queries.
             if (ctx->selectQuery() != NULL) {
-                std::shared_ptr<AbstractSelectNode> selectNode= visitSelectQuery(ctx->selectQuery());
+                std::shared_ptr<SelectNode> selectNode= visitSelectQuery(ctx->selectQuery());
                 //create the select query
-                std::shared_ptr<SelectQuery> selectQuery = std::make_shared<SelectQuery>(selectNode,prefixes);
-                return selectQuery;
+                return selectNode;
             }
             else
                 return NotImplementedException();
@@ -81,7 +79,7 @@ namespace SparqlParser::internal {
 
         antlrcpp::Any visitSelectQuery(Dice::tentris::SparqlParserBase::SparqlParser::SelectQueryContext *ctx) override {
 
-            std::shared_ptr<AbstractSelectNode> selectNode;
+            std::shared_ptr<SelectNode> selectNode;
             std::shared_ptr<IQueryNode> queryNode;
 
             //visit where clause
@@ -113,11 +111,11 @@ namespace SparqlParser::internal {
 
             //create the selectNode
             if (clause.nodeType == SelectNodeType::DISTINCT)
-                selectNode = std::make_shared<DistinctSelectNode>(queryNode, clause.selectVariables);
+                selectNode = std::make_shared<DistinctSelectNode>(queryNode, clause.selectVariables,prefixes);
             else if (clause.nodeType == SelectNodeType::REDUCED)
-                selectNode = std::make_shared<ReducedSelectNode>(queryNode, clause.selectVariables);
+                selectNode = std::make_shared<ReducedSelectNode>(queryNode, clause.selectVariables,prefixes);
             else
-                selectNode = std::make_shared<DefaultSelectNode>(queryNode, clause.selectVariables);
+                selectNode = std::make_shared<DefaultSelectNode>(queryNode, clause.selectVariables,prefixes);
 
             return selectNode;
 
@@ -141,8 +139,13 @@ namespace SparqlParser::internal {
 
             //deal with the variables
             std::vector<TripleVariable> selectVariables;
-            for (auto selectVariable:ctx->selectVariables()) {
-                selectVariables.push_back(TripleVariable(std::string(selectVariable->getText(),1,selectVariable->getText().size()-1)));
+            if(ctx->ASTERISK()!= nullptr)
+                selectVariables.push_back(TripleVariable("*"));
+            else {
+                for (auto selectVariable:ctx->selectVariables()) {
+                    selectVariables.push_back(TripleVariable(
+                            std::string(selectVariable->getText(), 1, selectVariable->getText().size() - 1)));
+                }
             }
             selectClause.selectVariables = selectVariables;
 

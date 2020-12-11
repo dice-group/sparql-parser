@@ -132,8 +132,8 @@ TEST(GrammerTests, BasicSelectQueryDefaultTest) {
     SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
 
     SparqlParser::internal::QueryGeneratorVisitor visitor;
-    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-//    selectQuery->executeQuery();
+    std::shared_ptr<SelectNode> selectNode = visitor.visitQuery(tree);
+//    selectNode->executeQuery();
 
 
     ASSERT_EQ(true,true);
@@ -151,8 +151,8 @@ TEST(GrammerTests, BasicSelectQueryDistinctTest) {
     SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
 
     SparqlParser::internal::QueryGeneratorVisitor visitor;
-    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-//    selectQuery->executeQuery();
+    std::shared_ptr<SelectNode> selectNode = visitor.visitQuery(tree);
+//    selectNode->executeQuery();
 
 
     ASSERT_EQ(true,true);
@@ -170,8 +170,8 @@ TEST(GrammerTests, BasicSelectQueryReducedTest) {
     SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
 
     SparqlParser::internal::QueryGeneratorVisitor visitor;
-    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-//    selectQuery->executeQuery();
+    std::shared_ptr<SelectNode> selectNode = visitor.visitQuery(tree);
+//    selectNode->executeQuery();
 
 
     ASSERT_EQ(true,true);
@@ -190,8 +190,8 @@ TEST(GrammerTests, BasicOptionalSelectQueryReducedTest) {
     SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
 
     SparqlParser::internal::QueryGeneratorVisitor visitor;
-    std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
-//    selectQuery->executeQuery();
+    std::shared_ptr<SelectNode> selectNode = visitor.visitQuery(tree);
+//    selectNode->executeQuery();
 
 
     ASSERT_EQ(true,true);
@@ -208,10 +208,10 @@ TEST(GrammerTests, ComplexOptionalSelectQueryReducedTest) {
             "  OPTIONAL { ?book <dc:isbn> ?isbn. } \n } \n"
             "  }"};
 
-    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectQuery->getOperands();
-    auto bgps=selectQuery->getBgps();
-    auto  prefixes=selectQuery->getPrefixes();
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectNode->getOperands();
+    auto bgps=selectNode->getBgps();
+    auto  prefixes=selectNode->getPrefixes();
 
 
 
@@ -232,10 +232,10 @@ TEST(GrammerTests, query1) {
             "  ?buch :autor ?autor .\n"
             "}"};
 
-    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectQuery->getOperands();
-    auto bgps=selectQuery->getBgps();
-    auto  prefixes=selectQuery->getPrefixes();
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectNode->getOperands();
+    auto bgps=selectNode->getBgps();
+    auto  prefixes=selectNode->getPrefixes();
 
 
 
@@ -255,10 +255,10 @@ TEST(GrammerTests, query2) {
             "  ?buch ex:autor ?autor .\n"
             "}"};
 
-    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectQuery->getOperands();
-    auto bgps=selectQuery->getBgps();
-    auto  prefixes=selectQuery->getPrefixes();
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectNode->getOperands();
+    auto bgps=selectNode->getBgps();
+    auto  prefixes=selectNode->getPrefixes();
 
 
     ASSERT_EQ(true,true);
@@ -267,12 +267,12 @@ TEST(GrammerTests, query2) {
 
 TEST(GrammerTests, query3) {
     std::string query{
-            "SELECT ?a WHERE {?a ?b ?c}"};
+            "SELECT * WHERE {?a ?b ?c}"};
 
-    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectQuery->getOperands();
-    auto bgps=selectQuery->getBgps();
-    auto  prefixes=selectQuery->getPrefixes();
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectNode->getOperands();
+    auto bgps=selectNode->getBgps();
+    auto  prefixes=selectNode->getPrefixes();
 
 
     ASSERT_EQ(true,true);
