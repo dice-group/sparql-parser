@@ -31,6 +31,11 @@
 #include "PropertySetElement.hpp"
 #include "Exceptions.hpp"
 
+using namespace SparqlQueryGraph::Nodes::GraphNodes;
+using namespace SparqlQueryGraph::Nodes::SelectNodes;
+using namespace SparqlQueryGraph::Nodes::Modifiers;
+using namespace SparqlQueryGraph::Nodes;
+
 namespace SparqlParser::internal {
     class QueryGeneratorVisitor : Dice::tentris::SparqlParserBase::SparqlParserBaseVisitor {
 

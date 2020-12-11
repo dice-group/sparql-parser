@@ -45,6 +45,6 @@ install(DIRECTORY include/ DESTINATION ${sparql-parser_INSTALL_INCLUDE_DIR})
 # testing
 #option(sparql-parser_BUILD_TESTS "Build sparql-parser tests." ON)
 #if(sparql-parser_BUILD_TESTS)
-#    enable_testing()
-#    add_subdirectory(tests)
+    enable_testing()
+    add_subdirectory(tests)
 #endif()
