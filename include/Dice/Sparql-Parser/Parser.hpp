@@ -3,6 +3,7 @@
 #define SPARQL_PARSER_PARSER_HPP
 
 #include "Dice/Sparql-Parser/internal/QueryGeneratorVisitor.hpp"
+#include "Dice/Sparql-Parser/internal/Exceptions.hpp"
 #include <SparqlLexer/SparqlLexer.h>
 
 namespace SparqlParser {
@@ -19,12 +20,20 @@ namespace SparqlParser {
 
     public:
         static std::shared_ptr<SelectQuery> parseSelectQuery(std::string query) {
-            Dice::tentris::SparqlParserBase::SparqlParser *parser = createParser(query);
-            Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *tree = parser->query();
 
+            Dice::tentris::SparqlParserBase::SparqlParser *parser;
+            Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *tree;
+            try {
+                parser = createParser(query);
+                tree = parser->query();
+            }
+            catch (SparqlParser::internal::ParseException exception) {
+                std::cout<<exception.what()<<std::endl;
+            }
             internal::QueryGeneratorVisitor visitor;
             std::shared_ptr<SelectQuery> selectQuery = visitor.visitQuery(tree);
             return selectQuery;
+
         }
     };
 }

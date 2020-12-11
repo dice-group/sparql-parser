@@ -60,20 +60,23 @@ namespace SparqlParser::internal {
 
     public:
 
-        antlrcpp::Any visitPrologue(Dice::tentris::SparqlParserBase::SparqlParser::PrologueContext *ctx) override{
-            std::map<std::string,std::string> prefixes;
-            if(ctx->baseDecl(0) != nullptr) {
-                prefixes["Base"] = ctx->baseDecl(0)->IRIREF()->getText();
-                prefixes["base"] = prefixes["Base"];
-                prefixes[""] = prefixes["Base"];
-            }
-            for(auto prefixStatement:ctx->prefixDecl())
-            {
-                std::string pname=prefixStatement->PNAME_NS()->getText();
-                std::string iriRef=prefixStatement->IRIREF()->getText();
-                prefixes[pname]=std::string(iriRef,1,iriRef.size() - 2);
+        antlrcpp::Any visitPrologue(Dice::tentris::SparqlParserBase::SparqlParser::PrologueContext *ctx) override {
+            std::map<std::string, std::string> prefixes;
+            if (ctx != nullptr) {
+                if (ctx->baseDecl(0) != nullptr) {
+                    prefixes["Base"] = ctx->baseDecl(0)->IRIREF()->getText();
+                    prefixes["base"] = prefixes["Base"];
+                    prefixes[""] = prefixes["Base"];
+                }
+                for (auto prefixStatement:ctx->prefixDecl()) {
+                    std::string pname = prefixStatement->PNAME_NS()->getText();
+                    pname=std::string(pname, 0, pname.size() - 1);
+                    std::string iriRef = prefixStatement->IRIREF()->getText();
+                    prefixes[pname] = std::string(iriRef, 1, iriRef.size() - 2);
+                }
             }
             return prefixes;
+
         }
 
         antlrcpp::Any visitSelectQuery(Dice::tentris::SparqlParserBase::SparqlParser::SelectQueryContext *ctx) override {
@@ -139,7 +142,7 @@ namespace SparqlParser::internal {
             //deal with the variables
             std::vector<TripleVariable> selectVariables;
             for (auto selectVariable:ctx->selectVariables()) {
-                selectVariables.push_back(TripleVariable(selectVariable->getText()));
+                selectVariables.push_back(TripleVariable(std::string(selectVariable->getText(),1,selectVariable->getText().size()-1)));
             }
             selectClause.selectVariables = selectVariables;
 

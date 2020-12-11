@@ -209,10 +209,70 @@ TEST(GrammerTests, ComplexOptionalSelectQueryReducedTest) {
             "  }"};
 
     std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectQuery->generateOperands();
+    auto operands=selectQuery->getOperands();
     auto bgps=selectQuery->getBgps();
     auto  prefixes=selectQuery->getPrefixes();
 
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}
+
+
+
+TEST(GrammerTests, query1) {
+    std::string query{
+            "PREFIX  : <http://example.org/>\n"
+            "SELECT ?title ?autor\n"
+            "WHERE\n"
+            "{ { ?buch :hatVerlag <http://springer.com/Verlag> .\n"
+            "    ?buch :titel ?title . }\n"
+            "  { }\n"
+            "  ?buch :autor ?autor .\n"
+            "}"};
+
+    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectQuery->getOperands();
+    auto bgps=selectQuery->getBgps();
+    auto  prefixes=selectQuery->getPrefixes();
+
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}
+
+
+TEST(GrammerTests, query2) {
+    std::string query{
+            "PREFIX ex:<http://example.org/>\n"
+            "SELECT ?title ?autor\n"
+            "WHERE\n"
+            "{ { ?buch ex:hatVerlag <http://springer.com/Verlag> .\n"
+            "    ?buch ex:titel ?title . }\n"
+            "  { }\n"
+            "  ?buch ex:autor ?autor .\n"
+            "}"};
+
+    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectQuery->getOperands();
+    auto bgps=selectQuery->getBgps();
+    auto  prefixes=selectQuery->getPrefixes();
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}
+
+TEST(GrammerTests, query3) {
+    std::string query{
+            "SELECT ?a WHERE {?a ?b ?c}"};
+
+    std::shared_ptr<SelectQuery> selectQuery=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectQuery->getOperands();
+    auto bgps=selectQuery->getBgps();
+    auto  prefixes=selectQuery->getPrefixes();
 
 
     ASSERT_EQ(true,true);
