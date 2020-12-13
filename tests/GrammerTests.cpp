@@ -267,7 +267,38 @@ TEST(GrammerTests, query2) {
 
 TEST(GrammerTests, query3) {
     std::string query{
-            "SELECT * WHERE {?a ?b ?c}"};
+            "PREFIX : <http://example.org/>\n"
+            "SELECT ?title ?autor\n"
+            "WHERE\n"
+            "{ { ?buch :hatVerlag <http://springer.com/Verlag> .\n"
+            "    ?buch :titel ?title . }\n"
+            "  { }\n"
+            "  ?buch :autor ?autor .\n"
+            "}"};
+
+
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    auto operands=selectNode->getOperands();
+    auto bgps=selectNode->getBgps();
+    auto  prefixes=selectNode->getPrefixes();
+
+
+    ASSERT_EQ(true,true);
+    //ASSERT_EQ(iri,Term::make_term(iriString));
+}
+
+
+TEST(GrammerTests, query4) {
+    std::string query{
+            "PREFIX ex: <http://example.org/>\n"
+            "SELECT ?title ?autor\n"
+            "WHERE\n"
+            "{ ?buch ex:hatVerlag <http://springer.com/Verlag>.\n"
+            "?buch ex:titel\n"
+            "?title .\n"
+            "?buch ex:autor\n"
+            "?autor . }"};
+
 
     std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
     auto operands=selectNode->getOperands();

@@ -265,8 +265,14 @@ namespace SparqlParser::internal {
         visitTriplesBlock(Dice::tentris::SparqlParserBase::SparqlParser::TriplesBlockContext *ctx) override {
             std::shared_ptr<ICommandNode> commandNode;
             std::vector<TriplePatternElement> elements;
-            std::string tb = ctx->getText();
-            rdf_parser::Turtle::parsers::StringParser<true> parser(ctx->getText(),prefixes);
+            //The following logic is to add (deleted)whitespaces between the tokens in order to process it by the rdf_parser
+            auto getTriplesSameSubjectPathText =[&](Dice::tentris::SparqlParserBase::SparqlParser::TriplesBlockContext *ctx) -> std::string {
+                std::string text="";
+                for(auto& it:ctx->triplesSameSubjectPath())
+                    text+=static_cast<std::string>(visitTriplesSameSubjectPath(it))+" . ";
+                return text;
+            };
+            rdf_parser::Turtle::parsers::StringParser<true> parser(getTriplesSameSubjectPathText(ctx),prefixes);
             auto it = parser.begin();
             while (it) {
                 //ToDo check this
@@ -278,6 +284,56 @@ namespace SparqlParser::internal {
             return commandNode;
         }
 
+        antlrcpp::Any visitTriplesSameSubjectPath(
+                Dice::tentris::SparqlParserBase::SparqlParser::TriplesSameSubjectPathContext *ctx) override {
+            std::string result;
+            if(ctx->varOrTerm() != nullptr)
+                result= ctx->varOrTerm()->getText()+" "+static_cast<std::string>(visitPropertyListPathNotEmpty(ctx->propertyListPathNotEmpty()));
+                else
+                    result=static_cast<std::string>(visitTriplesNodePath(ctx->triplesNodePath()))+" "+static_cast<std::string>(visitPropertyListPath(ctx->propertyListPath()));
+            return result;
+        }
+
+
+        antlrcpp::Any visitPropertyListPathNotEmpty(
+                Dice::tentris::SparqlParserBase::SparqlParser::PropertyListPathNotEmptyContext *ctx) override {
+            std::string result;
+            std::string verb;
+            if (ctx->verbPath() != nullptr)
+                verb = ctx->verbPath()->getText();
+            else
+                verb = ctx->verbSimple()->getText();
+            result = verb + " " + ctx->objectListPath()->getText();
+            for (auto &it:ctx->propertyListPathNotEmptyList())
+                result += " ; " + static_cast<std::string>(visitPropertyListPathNotEmptyList(it));
+            return result;
+        }
+
+        antlrcpp::Any visitPropertyListPathNotEmptyList(
+                Dice::tentris::SparqlParserBase::SparqlParser::PropertyListPathNotEmptyListContext *ctx) override {
+            std::string result;
+            if (ctx->verbPath() != nullptr)
+                throw SparqlParser::internal::NotImplementedException();
+            else
+                result = ctx->verbSimple()->getText() + " " +ctx->objectList()->getText();
+            return result;
+        }
+
+        antlrcpp::Any
+        visitTriplesNodePath(Dice::tentris::SparqlParserBase::SparqlParser::TriplesNodePathContext *ctx) override {
+            std::string result;
+            if(ctx->collectionPath()!= nullptr)
+                result=ctx->collectionPath()->getText();
+            else
+                result=static_cast<std::string>(visitBlankNodePropertyListPath(ctx->blankNodePropertyListPath()));
+            return result;
+
+        }
+
+        antlrcpp::Any visitBlankNodePropertyListPath(
+                Dice::tentris::SparqlParserBase::SparqlParser::BlankNodePropertyListPathContext *ctx) override {
+            return "["+static_cast<std::string>(visitPropertyListPathNotEmpty(ctx->propertyListPathNotEmpty()))+"]";
+        }
 
         antlrcpp::Any visitGraphPatternNotTriples(
                 Dice::tentris::SparqlParserBase::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
@@ -320,16 +376,9 @@ namespace SparqlParser::internal {
 
         }
 
-        antlrcpp::Any visitTriplesSameSubjectPath(
-                Dice::tentris::SparqlParserBase::SparqlParser::TriplesSameSubjectPathContext *ctx) override {
-            return SparqlParserBaseVisitor::visitTriplesSameSubjectPath(ctx);
-        }
 
 
-        antlrcpp::Any visitPropertyListPathNotEmpty(
-                Dice::tentris::SparqlParserBase::SparqlParser::PropertyListPathNotEmptyContext *ctx) override {
-            return SparqlParserBaseVisitor::visitPropertyListPathNotEmpty(ctx);
-        }
+
 
         antlrcpp::Any visitVerbPath(Dice::tentris::SparqlParserBase::SparqlParser::VerbPathContext *ctx) override {
             return visitPath(ctx->path());
@@ -538,6 +587,7 @@ namespace SparqlParser::internal {
     QueryGeneratorVisitor::~QueryGeneratorVisitor() {
 
     }
+
 
 
 
