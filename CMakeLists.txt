@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser VERSION 0.1.0)
+project(sparql-parser
+        VERSION 0.1.0
+        LANGUAGES CXX
+        )
+
+set(CMAKE_CXX_STANDARD 17)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -43,8 +48,9 @@ install(DIRECTORY include/ DESTINATION ${sparql-parser_INSTALL_INCLUDE_DIR})
 
 
 # testing
-#option(sparql-parser_BUILD_TESTS "Build sparql-parser tests." ON)
-#if(sparql-parser_BUILD_TESTS)
+option(sparql-parser_BUILD_TESTS "Build sparql-parser tests.")
+if(sparql-parser_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
-#endif()
+endif()
+unset(sparql-parser_BUILD_TESTS CACHE)
