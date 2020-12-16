@@ -11,7 +11,7 @@ class sparqlParserBase(ConanFile):
     license = "AGPL"
     topics = "SPARQL", "parser", "semantic web"
     settings = "os", "compiler", "build_type", "arch"
-    requires="sparql-parser-base/0.1.1@dice-group/stable","sparql-queryGraph/0.9@dice-group/stable","rdf-parser/0.11@dice-group/stable","gtest/1.8.1@bincrafters/stable"
+    requires="sparql-parser-base/0.1.1@dice-group/stable","sparql-queryGraph/0.9@dice-group/stable","rdf-parser/0.11@dice-group/stable","gtest/1.8.1"
     generators = "cmake", "cmake_find_package", "cmake_paths"
     exports = "LICENSE.txt"
     exports_sources = (
