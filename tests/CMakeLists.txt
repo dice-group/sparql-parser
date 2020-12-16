@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-FIND_PACKAGE(GTest REQUIRED CONFIG)
-find_package(GMock REQUIRED)
 
 # add the executable for all tests
 add_executable(tests Tests.cpp)
