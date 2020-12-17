@@ -33,8 +33,8 @@ RUN cd Sparql-parser/build && \
 # change working directory
 WORKDIR /Sparql-parser/build
 # run cmake
-RUN cmake -Dsparql-parser_BUILD_TESTS=ON ..
+RUN cmake -Dsparql-parser_BUILD_TESTS=OFF ..
 # build
 RUN make -j $(nproc)
 
-CMD ["./tests"]
+#CMD ["./tests"]
