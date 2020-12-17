@@ -37,4 +37,4 @@ RUN cmake -Dsparql-parser_BUILD_TESTS=OFF ..
 # build
 RUN make -j $(nproc)
 
-#CMD ["./tests"]
+CMD ["./tests"]
