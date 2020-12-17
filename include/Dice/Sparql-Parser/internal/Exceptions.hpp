@@ -10,7 +10,7 @@
 namespace SparqlParser::internal {
     class ParseException : public std::exception {
     public:
-        const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        [[nodiscard]] const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
             return "The query can't be parsed";
         }
     };

@@ -42,17 +42,17 @@ namespace SparqlParser::internal {
 
     public:
         IriPropertySetElement(rdf_parser::store::rdf::URIRef iri, bool isInversed, PathMode pathMode)
-                : SinglePropertySetElement(isInversed, pathMode), iri(iri) {};
+                : SinglePropertySetElement(isInversed, pathMode), iri(std::move(iri)) {};
 
         IriPropertySetElement(rdf_parser::store::rdf::URIRef iri, bool isInversed) : SinglePropertySetElement(
-                isInversed, PathMode::None), iri(iri) {};
+                isInversed, PathMode::None), iri(std::move(iri)) {};
 
-        IriPropertySetElement(rdf_parser::store::rdf::URIRef iri) : SinglePropertySetElement(false, PathMode::None),
-                                                                    iri(iri) {};
+        explicit IriPropertySetElement(rdf_parser::store::rdf::URIRef iri) : SinglePropertySetElement(false, PathMode::None),
+                                                                    iri(std::move(iri)) {};
 
         IriPropertySetElement(rdf_parser::store::rdf::URIRef iri, PathMode pathMode) : SinglePropertySetElement(false,
                                                                                                                 pathMode),
-                                                                                       iri(iri) {};
+                                                                                       iri(std::move(iri)) {};
     };
 
 
@@ -61,9 +61,9 @@ namespace SparqlParser::internal {
     public:
         APropertySetElement(bool isInversed, PathMode pathMode) : SinglePropertySetElement(isInversed, pathMode) {};
 
-        APropertySetElement(PathMode pathMode) : SinglePropertySetElement(false, pathMode) {};
+        explicit APropertySetElement(PathMode pathMode) : SinglePropertySetElement(false, pathMode) {};
 
-        APropertySetElement(bool isInversed) : SinglePropertySetElement(isInversed, PathMode::None) {};
+        explicit APropertySetElement(bool isInversed) : SinglePropertySetElement(isInversed, PathMode::None) {};
     };
 
 
