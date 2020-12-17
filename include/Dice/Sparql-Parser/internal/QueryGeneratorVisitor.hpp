@@ -22,7 +22,6 @@
 #include <Dice/Sparql-Query/QueryNodes/GroupNode.hpp>
 
 #include <Dice/rdf_parser/RDF/Term.hpp>
-
 #include <Dice/rdf_parser/Parser/Turtle/Parsers/StringParser.hpp>
 
 
@@ -31,13 +30,13 @@
 #include "PropertySetElement.hpp"
 #include "Exceptions.hpp"
 
-using namespace SparqlQueryGraph::Nodes::GraphNodes;
-using namespace SparqlQueryGraph::Nodes::SelectNodes;
-using namespace SparqlQueryGraph::Nodes::Modifiers;
-using namespace SparqlQueryGraph::Nodes;
 
 namespace SparqlParser::internal {
-    class QueryGeneratorVisitor : Dice::tentris::SparqlParserBase::SparqlParserBaseVisitor {
+    using namespace SparqlQueryGraph::Nodes::GraphNodes;
+    using namespace SparqlQueryGraph::Nodes::SelectNodes;
+    using namespace SparqlQueryGraph::Nodes::Modifiers;
+    using namespace SparqlQueryGraph::Nodes;
+    class QueryGeneratorVisitor : public Dice::tentris::SparqlParserBase::SparqlParserBaseVisitor {
 
     private:
         std::map<std::string,std::string> prefixes;

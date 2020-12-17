@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <Dice/Sparql-Parser/Parser.hpp>
 
+using namespace SparqlQueryGraph::Nodes::SelectNodes;
 
 TEST(ParserTests, query1) {
     std::string query{

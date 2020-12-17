@@ -7,8 +7,14 @@ project(sparql-parser
 
 set(CMAKE_CXX_STANDARD 17)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+
+
+include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+
+
+find_package(sparql-parser-base REQUIRED)
+find_package(rdf-parser REQUIRED)
+find_package(sparql-queryGraph REQUIRED)
 
 # installation directories
 set(sparql-parser_INSTALL_INCLUDE_DIR "include" CACHE STRING "The installation include directory")
@@ -22,7 +28,7 @@ target_include_directories(sparql-parser  INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${sparql-parser_INSTALL_CMAKE_DIR}>
         )
-target_link_libraries(sparql-parser INTERFACE  ${CONAN_LIBS})
+target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-queryGraph::sparql-queryGraph)
 
 # require C++17
 target_compile_features(sparql-parser INTERFACE cxx_std_17)
@@ -48,7 +54,7 @@ install(DIRECTORY include/ DESTINATION ${sparql-parser_INSTALL_INCLUDE_DIR})
 
 
 # testing
-option(sparql-parser_BUILD_TESTS "Build sparql-parser tests." ON)
+option(sparql-parser_BUILD_TESTS "Build sparql-parser tests." OFF)
 if(sparql-parser_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)

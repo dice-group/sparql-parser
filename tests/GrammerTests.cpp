@@ -8,6 +8,7 @@
 namespace
 {
     using namespace Dice::tentris;
+    using namespace SparqlQueryGraph::Nodes::SelectNodes;
 }
 
 SparqlParserBase::SparqlParser* createParser(std::string text)
