@@ -27,7 +27,7 @@ namespace SparqlParser {
                 parser = createParser(query);
                 tree = parser->query();
             }
-            catch (SparqlParser::internal::ParseException exception) {
+            catch (const SparqlParser::internal::ParseException &exception) {
                 std::cout<<exception.what()<<std::endl;
             }
             internal::QueryGeneratorVisitor visitor;
