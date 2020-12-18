@@ -314,9 +314,10 @@ namespace SparqlParser::internal {
                 Dice::tentris::SparqlParserBase::SparqlParser::PropertyListPathNotEmptyListContext *ctx) override {
             std::string result;
             if (ctx->verbPath() != nullptr)
-                throw SparqlParser::internal::NotImplementedException();
+                result = ctx->verbPath()->getText();
             else
-                result = ctx->verbSimple()->getText() + " " + ctx->objectList()->getText();
+                result = ctx->verbSimple()->getText();
+            result = result + " " + ctx->objectList()->getText();
             return result;
         }
 
