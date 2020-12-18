@@ -16,6 +16,7 @@ RUN pip3 install conan && \
     conan user && \
     conan profile new --detect default && \
     conan profile update settings.compiler.libcxx=libstdc++11 default && \
+    conan profile update settings.compiler.version=10 default && \
     conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
 
 
@@ -33,8 +34,8 @@ RUN cd Sparql-parser/build && \
 # change working directory
 WORKDIR /Sparql-parser/build
 # run cmake
-RUN cmake -Dsparql-parser_BUILD_TESTS=OFF ..
+RUN cmake -Dsparql-parser_BUILD_TESTS=ON ..
 # build
 RUN make -j $(nproc)
 
-CMD ["./tests"]
+CMD ["./tests/tests"]
