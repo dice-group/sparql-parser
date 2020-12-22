@@ -91,7 +91,6 @@ TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
     TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 }
 
-
 TEST(BasicBgpsTests, multipleBgps) {
     std::string query{
             "SELECT ?s ?e WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal>.?s <http://swrc.ontoware.org/ontology#editor> ?e}"};
@@ -115,7 +114,6 @@ TEST(BasicBgpsTests, multipleBgps) {
 
     TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 }
-
 
 TEST(BasicBgpsTests, multipleBgps2) {
     std::string query{
@@ -142,3 +140,4 @@ TEST(BasicBgpsTests, multipleBgps2) {
     TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 
 }
+
