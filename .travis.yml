@@ -1,0 +1,36 @@
+dist: xenial
+language: cpp
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+
+      env:
+        - COMPILER=g++-9
+        - CXX=g++-9
+        - CC=gcc-9
+
+
+
+      cache:
+        directories:
+          - $HOME/.conan/data
+
+      before_script:
+        - sudo apt install python3-pip
+        - pip install conan --user
+        - remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+        - conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
+      script:
+        - mkdir build
+        - cd build
+        - conan install .. --build=missing --settings compiler.libcxx="libstdc++11"
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release cmake -Dsparql-parser_BUILD_TESTS=ON ..
+        - make -j
+        - ./tests/bin/tests
