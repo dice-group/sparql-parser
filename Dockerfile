@@ -16,7 +16,7 @@ RUN pip3 install conan && \
     conan user && \
     conan profile new --detect default && \
     conan profile update settings.compiler.libcxx=libstdc++11 default && \
-    conan profile update settings.compiler.version=10 default && \
+    conan profile update settings.compiler.version=9 default && \
     conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
 
 
