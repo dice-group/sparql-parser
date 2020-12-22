@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <Dice/Sparql-Parser/Parser.hpp>
+#include <search.h>
 
 #include "TestUtilites.hpp"
 
@@ -136,6 +137,40 @@ TEST(BasicBgpsTests, multipleBgps2) {
     };
 
     SelectModifier selectModifier=SelectModifier::DISTINCT;
+
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
+
+}
+
+
+
+TEST(BasicBgpsTests, multipleBgpsConnectedWithSemiColon) {
+    std::string query{
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX swc: <http://data.semanticweb.org/ns/swc/ontology#> PREFIX dce: <http://purl.org/dc/elements/1.1/> \n"
+            " SELECT ?el ?et WHERE { <http://data.semanticweb.org/workshop/usewod/2012> swc:hasLocation ?l . ?e swc:hasLocation ?l ; rdfs:label ?el }"};
+
+
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+
+    std::vector<std::vector<char>> expectedOperands {{'a'},
+                                                     {'b','a'},
+                                                     {'b','c'}
+    };
+    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(Term("<http://data.semanticweb.org/workshop/usewod/2012>"),Term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),TripleVariable("l")),
+                                                   TriplePatternElement(TripleVariable("e"),Term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),TripleVariable("l")),
+                                                   TriplePatternElement(TripleVariable("e"),Term("<http://www.w3.org/2000/01/rdf-schema#label>"),TripleVariable("el"))
+    };
+
+    std::map<std::string,std::string> expectedPrefixes{ {"rdfs","http://www.w3.org/2000/01/rdf-schema#"},
+                                                        {"swc","http://data.semanticweb.org/ns/swc/ontology#"},
+                                                        {"dce","http://purl.org/dc/elements/1.1/"}
+    };
+    std::vector<char> expectedSubscriptResult{'c','d'};
+    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"el"},
+                                                         TripleVariable{"et"}
+    };
+
+    SelectModifier selectModifier=SelectModifier::NONE;
 
     TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 
