@@ -16,7 +16,7 @@ conan remote add dice "https://api.bintray.com/conan/dice-group/tentris"
 ```
 
 ### build
-The build has been tested with gcc 10 compiler.
+The build has been tested with gcc 9 compiler.
 ```
 mkdir build
 cd build
