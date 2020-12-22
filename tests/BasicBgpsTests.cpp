@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 #include <Dice/Sparql-Parser/Parser.hpp>
 
-using namespace SparqlQueryGraph::Nodes::SelectNodes;
+#include "TestUtilites.hpp"
 
+using namespace SparqlQueryGraph::Nodes::SelectNodes;
 
 
 TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
@@ -14,12 +15,6 @@ TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
             "  }"};
 
     std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectNode->getOperands();
-    auto bgps=selectNode->getBgps();
-    auto  prefixes=selectNode->getPrefixes();
-    auto subscriptResult=selectNode->getSubscriptResult();
-    auto selectVariables=selectNode->getSelectVariables();
-    auto selectModifier=selectNode->getSelectModifier();
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
@@ -33,19 +28,10 @@ TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
                                                          TripleVariable{"title"},
                                                          TripleVariable{"price"}
                                                        };
+    SelectModifier selectModifier=SelectModifier::NONE;
 
-    bool operandsEqual=std::equal(operands.begin(),operands.end(),expectedOperands.begin());
-    bool bgpsEqual=std::equal(bgps.begin(),bgps.end(),expectedBgps.begin());
-    bool prefixesEqual=std::equal(prefixes.begin(),prefixes.end(),expectedPrefixes.begin());
-    bool subscriptResultEqual=std::equal(subscriptResult.begin(),subscriptResult.end(),expectedSubscriptResult.begin());
-    bool selectVariablesEqual=std::equal(selectVariables.begin(),selectVariables.end(),expectedSelectVariables.begin());
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 
-    ASSERT_EQ(operandsEqual,true);
-    ASSERT_EQ(bgpsEqual,true);
-    ASSERT_EQ(prefixesEqual,true);
-    ASSERT_EQ(subscriptResultEqual,true);
-    ASSERT_EQ(selectVariablesEqual,true);
-    ASSERT_EQ(selectModifier,SelectModifier::NONE);
 }
 
 TEST(BasicBgpsTests, BasicSelectQueryDistinctTest) {
@@ -57,12 +43,6 @@ TEST(BasicBgpsTests, BasicSelectQueryDistinctTest) {
             "  }"};
 
     std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectNode->getOperands();
-    auto bgps=selectNode->getBgps();
-    auto  prefixes=selectNode->getPrefixes();
-    auto subscriptResult=selectNode->getSubscriptResult();
-    auto selectVariables=selectNode->getSelectVariables();
-    auto selectModifier=selectNode->getSelectModifier();
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
@@ -77,18 +57,9 @@ TEST(BasicBgpsTests, BasicSelectQueryDistinctTest) {
                                                          TripleVariable{"price"}
     };
 
-    bool operandsEqual=std::equal(operands.begin(),operands.end(),expectedOperands.begin());
-    bool bgpsEqual=std::equal(bgps.begin(),bgps.end(),expectedBgps.begin());
-    bool prefixesEqual=std::equal(prefixes.begin(),prefixes.end(),expectedPrefixes.begin());
-    bool subscriptResultEqual=std::equal(subscriptResult.begin(),subscriptResult.end(),expectedSubscriptResult.begin());
-    bool selectVariablesEqual=std::equal(selectVariables.begin(),selectVariables.end(),expectedSelectVariables.begin());
+    SelectModifier selectModifier=SelectModifier::DISTINCT;
 
-    ASSERT_EQ(operandsEqual,true);
-    ASSERT_EQ(bgpsEqual,true);
-    ASSERT_EQ(prefixesEqual,true);
-    ASSERT_EQ(subscriptResultEqual,true);
-    ASSERT_EQ(selectVariablesEqual,true);
-    ASSERT_EQ(selectModifier,SelectModifier::DISTINCT);
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 }
 
 TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
@@ -100,12 +71,7 @@ TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
             "  }"};
 
     std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectNode->getOperands();
-    auto bgps=selectNode->getBgps();
-    auto  prefixes=selectNode->getPrefixes();
-    auto subscriptResult=selectNode->getSubscriptResult();
-    auto selectVariables=selectNode->getSelectVariables();
-    auto selectModifier=selectNode->getSelectModifier();
+
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
@@ -120,18 +86,9 @@ TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
                                                          TripleVariable{"price"}
     };
 
-    bool operandsEqual=std::equal(operands.begin(),operands.end(),expectedOperands.begin());
-    bool bgpsEqual=std::equal(bgps.begin(),bgps.end(),expectedBgps.begin());
-    bool prefixesEqual=std::equal(prefixes.begin(),prefixes.end(),expectedPrefixes.begin());
-    bool subscriptResultEqual=std::equal(subscriptResult.begin(),subscriptResult.end(),expectedSubscriptResult.begin());
-    bool selectVariablesEqual=std::equal(selectVariables.begin(),selectVariables.end(),expectedSelectVariables.begin());
+    SelectModifier selectModifier=SelectModifier::REDUCE;
 
-    ASSERT_EQ(operandsEqual,true);
-    ASSERT_EQ(bgpsEqual,true);
-    ASSERT_EQ(prefixesEqual,true);
-    ASSERT_EQ(subscriptResultEqual,true);
-    ASSERT_EQ(selectVariablesEqual,true);
-    ASSERT_EQ(selectModifier,SelectModifier::REDUCE);
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 }
 
 
@@ -141,12 +98,6 @@ TEST(BasicBgpsTests, multipleBgps) {
 
 
     std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectNode->getOperands();
-    auto bgps=selectNode->getBgps();
-    auto  prefixes=selectNode->getPrefixes();
-    auto subscriptResult=selectNode->getSubscriptResult();
-    auto selectVariables=selectNode->getSelectVariables();
-    auto selectModifier=selectNode->getSelectModifier();
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b'}
@@ -160,18 +111,9 @@ TEST(BasicBgpsTests, multipleBgps) {
                                                          TripleVariable{"e"}
                                                         };
 
-    bool operandsEqual=std::equal(operands.begin(),operands.end(),expectedOperands.begin());
-    bool bgpsEqual=std::equal(bgps.begin(),bgps.end(),expectedBgps.begin());
-    bool prefixesEqual=std::equal(prefixes.begin(),prefixes.end(),expectedPrefixes.begin());
-    bool subscriptResultEqual=std::equal(subscriptResult.begin(),subscriptResult.end(),expectedSubscriptResult.begin());
-    bool selectVariablesEqual=std::equal(selectVariables.begin(),selectVariables.end(),expectedSelectVariables.begin());
+    SelectModifier selectModifier=SelectModifier::NONE;
 
-    ASSERT_EQ(operandsEqual,true);
-    ASSERT_EQ(bgpsEqual,true);
-    ASSERT_EQ(prefixesEqual,true);
-    ASSERT_EQ(subscriptResultEqual,true);
-    ASSERT_EQ(selectVariablesEqual,true);
-    ASSERT_EQ(selectModifier,SelectModifier::NONE);
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 }
 
 
@@ -181,12 +123,6 @@ TEST(BasicBgpsTests, multipleBgps2) {
 
 
     std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
-    auto operands=selectNode->getOperands();
-    auto bgps=selectNode->getBgps();
-    auto  prefixes=selectNode->getPrefixes();
-    auto subscriptResult=selectNode->getSubscriptResult();
-    auto selectVariables=selectNode->getSelectVariables();
-    auto selectModifier=selectNode->getSelectModifier();
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b','c'}
@@ -201,17 +137,8 @@ TEST(BasicBgpsTests, multipleBgps2) {
                                                          TripleVariable{"o"}
     };
 
-    bool operandsEqual=std::equal(operands.begin(),operands.end(),expectedOperands.begin());
-    bool bgpsEqual=std::equal(bgps.begin(),bgps.end(),expectedBgps.begin());
-    bool prefixesEqual=std::equal(prefixes.begin(),prefixes.end(),expectedPrefixes.begin());
-    bool subscriptResultEqual=std::equal(subscriptResult.begin(),subscriptResult.end(),expectedSubscriptResult.begin());
-    bool selectVariablesEqual=std::equal(selectVariables.begin(),selectVariables.end(),expectedSelectVariables.begin());
+    SelectModifier selectModifier=SelectModifier::DISTINCT;
 
-    ASSERT_EQ(operandsEqual,true);
-    ASSERT_EQ(bgpsEqual,true);
-    ASSERT_EQ(prefixesEqual,true);
-    ASSERT_EQ(subscriptResultEqual,true);
-    ASSERT_EQ(selectVariablesEqual,true);
-    ASSERT_EQ(selectModifier,SelectModifier::DISTINCT);
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 
 }
