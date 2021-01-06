@@ -17,7 +17,10 @@ namespace SparqlParser::internal {
 
 
     class NotImplementedException : public std::exception {
-
+    public:
+        [[nodiscard]] const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+            return "This functionality is not implemented yet";
+        }
     };
 
 }

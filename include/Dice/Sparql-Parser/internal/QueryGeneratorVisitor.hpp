@@ -27,7 +27,6 @@
 
 #include "SelectNodeType.hpp"
 #include "SelectClause.hpp"
-#include "PropertySetElement.hpp"
 #include "Exceptions.hpp"
 
 
