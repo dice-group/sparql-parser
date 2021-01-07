@@ -5,6 +5,36 @@
 
 using namespace SparqlQueryGraph::Nodes::SelectNodes;
 
+TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
+    std::string query{
+            "PREFIX wde: <http://www.wikidata.org/entity/> PREFIX wdt: <http://www.wikidata.org/prop/direct/>  \n"
+            " SELECT * WHERE { ?var1 wdt:P31 wde:Q5 OPTIONAL { } }"};
+
+
+    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+
+    std::vector<std::vector<char>> expectedOperands {{'a'},
+                                                     {'['},
+                                                     {']'}
+    };
+
+    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("var1") ,
+                                                                        Term("<http://www.wikidata.org/prop/direct/P31>"),
+                                                                        Term("<http://www.wikidata.org/entity/Q5>")
+                                                                        )};
+
+    std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
+                                                       {"wdt", "http://www.wikidata.org/prop/direct/"}
+    };
+
+    std::vector<char> expectedSubscriptResult{'a'};
+    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"var1"} };
+
+    SelectModifier selectModifier=SelectModifier::NONE;
+
+    TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
+
+}
 
 TEST(BasicOptionalPatternTests, multipleBgpsBeforeOptional) {
     std::string query{
@@ -184,4 +214,6 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColon3) {
     TestUtilites::checkResult(selectNode,expectedOperands,expectedBgps,expectedPrefixes,expectedSelectVariables,expectedSubscriptResult,selectModifier);
 
 }
+
+
 

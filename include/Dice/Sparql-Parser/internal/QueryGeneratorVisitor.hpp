@@ -20,6 +20,7 @@
 #include <Dice/Sparql-Query/TriplePatternElement.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SpecialNodes/OptionalPatternNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/GroupNode.hpp>
+#include <Dice/Sparql-Query/QueryNodes/EmptyNode.hpp>
 
 #include <Dice/rdf_parser/RDF/Term.hpp>
 #include <Dice/rdf_parser/Parser/Turtle/Parsers/StringParser.hpp>
@@ -210,7 +211,9 @@ namespace SparqlParser::internal {
                 commandNode = visitSubSelect(ctx->subSelect());
             else
                 commandNode = visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
-
+            
+            if(commandNode== nullptr)
+                commandNode=std::make_shared<Nodes::EmptyNode>();
             return commandNode;
         }
 
@@ -223,6 +226,9 @@ namespace SparqlParser::internal {
             if (ctx->groupGraphPatternSubList().empty()) {
                 if (ctx->triplesBlock() != nullptr) {
                     commandNode = visitTriplesBlock(ctx->triplesBlock());
+                } else
+                {
+
                 }
             } else {
                 if ((ctx->triplesBlock() == nullptr) && (ctx->groupGraphPatternSubList().size() == 1)) {
