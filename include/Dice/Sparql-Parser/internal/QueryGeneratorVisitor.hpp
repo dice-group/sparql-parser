@@ -167,7 +167,7 @@ namespace SparqlParser::internal {
             else if (nodeTypeRaw == "REDUCED")
                 nodeType = SelectNodeType::REDUCED;
             else
-                throw new ParseException();
+                throw ParseException();
             return nodeType;
         }
 
@@ -177,19 +177,19 @@ namespace SparqlParser::internal {
             std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers;
 
             if (ctx->groupClause() != nullptr) {
-                //ToDo
+                throw NotImplementedException();
             }
 
             if (ctx->havingClause() != nullptr) {
-                //ToDo
+                throw NotImplementedException();
             }
 
             if (ctx->orderClause() != nullptr) {
-                //ToDo
+                throw NotImplementedException();
             }
 
             if (ctx->limitOffsetClauses() != nullptr) {
-                //ToDo
+                throw NotImplementedException();
             }
 
             return solutionModifiers;
@@ -228,7 +228,7 @@ namespace SparqlParser::internal {
                     commandNode = visitTriplesBlock(ctx->triplesBlock());
                 } else
                 {
-
+                    commandNode = std::make_shared<Nodes::EmptyNode>();
                 }
             } else {
                 if ((ctx->triplesBlock() == nullptr) && (ctx->groupGraphPatternSubList().size() == 1)) {
