@@ -211,7 +211,7 @@ namespace SparqlParser::internal {
                 commandNode = visitSubSelect(ctx->subSelect());
             else
                 commandNode = visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
-            
+
             if(commandNode== nullptr)
                 commandNode=std::make_shared<Nodes::EmptyNode>();
             return commandNode;

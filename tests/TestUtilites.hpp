@@ -42,7 +42,7 @@ public:
         ASSERT_EQ(prefixesEqual,true);
         ASSERT_EQ(subscriptResultEqual,true);
         ASSERT_EQ(selectVariablesEqual,true);
-        ASSERT_EQ(result->getSelectModifier(),expectedSelectModifier);
+        ASSERT_EQ(selectModifier,expectedSelectModifier);
     }
 };
 
