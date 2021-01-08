@@ -348,24 +348,22 @@ namespace SparqlParser::internal {
             std::shared_ptr<ICommandNode> commandNode;
 
             if (ctx->groupOrUnionGraphPattern() != nullptr) {
-
+                commandNode=visitGroupOrUnionGraphPattern(ctx->groupOrUnionGraphPattern());
             } else if (ctx->optionalGraphPattern() != nullptr) {
                 commandNode = visitOptionalGraphPattern(ctx->optionalGraphPattern());
             } else if (ctx->minusGraphPattern() != nullptr) {
-
+                throw NotImplementedException();
             } else if (ctx->graphGraphPattern() != nullptr) {
-
+                throw NotImplementedException();
             } else if (ctx->serviceGraphPattern() != nullptr) {
-
+                throw NotImplementedException();
             } else if (ctx->filter() != nullptr) {
-
+                throw NotImplementedException();
             } else if (ctx->bind() != nullptr) {
-
+                throw NotImplementedException();
             }
-
-                // else inlineData
             else {
-
+                throw NotImplementedException();
             }
 
 
@@ -382,6 +380,13 @@ namespace SparqlParser::internal {
 
         }
 
+        antlrcpp::Any visitGroupOrUnionGraphPattern(
+                Dice::tentris::SparqlParserBase::SparqlParser::GroupOrUnionGraphPatternContext *ctx) override {
+            if(!ctx->UNION().empty())
+                throw NotImplementedException();
+            else
+                return visitGroupGraphPattern(ctx->groupGraphPattern()[0]);
+        }
 
         virtual ~QueryGeneratorVisitor(){};
 
