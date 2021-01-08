@@ -347,7 +347,7 @@ namespace SparqlParser::internal {
 
             std::shared_ptr<ICommandNode> commandNode;
 
-            if (ctx->groupOrUnionGraphPattern() != nullptr) {
+            if (ctx->groupOrUnionGraphPattern()!= nullptr) {
                 commandNode=visitGroupOrUnionGraphPattern(ctx->groupOrUnionGraphPattern());
             } else if (ctx->optionalGraphPattern() != nullptr) {
                 commandNode = visitOptionalGraphPattern(ctx->optionalGraphPattern());

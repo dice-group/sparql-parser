@@ -12,8 +12,8 @@ RUN mkdir /Sparql-parser/build
 
 
 # setup conan
-RUN pip3 install conan && \
-    conan user && \
+RUN pip3 install conan
+RUN conan user && \
     conan profile new --detect default && \
     conan profile update settings.compiler.libcxx=libstdc++11 default && \
     conan profile update settings.compiler.version=9 default && \
@@ -38,4 +38,4 @@ RUN cmake -Dsparql-parser_BUILD_TESTS=ON ..
 # build
 RUN make -j $(nproc)
 
-CMD ["./tests/tests"]
+RUN ./tests/tests
