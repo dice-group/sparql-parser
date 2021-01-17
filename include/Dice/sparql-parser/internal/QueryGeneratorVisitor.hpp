@@ -31,7 +31,7 @@
 #include "Exceptions.hpp"
 
 
-namespace SparqlParser::internal {
+namespace Dice::sparql_parser::internal {
     using namespace SparqlQueryGraph::Nodes::GraphNodes;
     using namespace SparqlQueryGraph::Nodes::SelectNodes;
     using namespace SparqlQueryGraph::Nodes::Modifiers;

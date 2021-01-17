@@ -7,7 +7,7 @@
 
 #include <exception>
 
-namespace SparqlParser::internal {
+namespace Dice::sparql_parser::internal {
     class ParseException : public std::exception {
     public:
         [[nodiscard]] const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {

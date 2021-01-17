@@ -7,7 +7,7 @@
 
 #include "SelectNodeType.hpp"
 
-namespace SparqlParser::internal {
+namespace Dice::sparql_parser::internal {
     struct SelectClause {
         SelectNodeType nodeType;
         std::vector<TripleVariable> selectVariables;

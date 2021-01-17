@@ -6,7 +6,7 @@
 #include "Dice/Sparql-Parser/internal/Exceptions.hpp"
 #include <SparqlLexer/SparqlLexer.h>
 
-namespace SparqlParser {
+namespace Dice::sparql_parser {
     class Parser {
 
     private:
