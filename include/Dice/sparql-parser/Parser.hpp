@@ -2,9 +2,11 @@
 #ifndef SPARQL_PARSER_PARSER_HPP
 #define SPARQL_PARSER_PARSER_HPP
 
-#include "Dice/Sparql-Parser/internal/QueryGeneratorVisitor.hpp"
-#include "Dice/Sparql-Parser/internal/Exceptions.hpp"
 #include <SparqlLexer/SparqlLexer.h>
+
+#include "Dice/sparql-parser/internal/QueryGeneratorVisitor.hpp"
+#include "Dice/sparql-parser/internal/Exceptions.hpp"
+
 
 namespace Dice::sparql_parser {
     class Parser {
@@ -27,7 +29,7 @@ namespace Dice::sparql_parser {
                 parser = createParser(query);
                 tree = parser->query();
             }
-            catch (const SparqlParser::internal::ParseException &exception) {
+            catch (const sparql_parser::internal::ParseException &exception) {
                 std::cout<<exception.what()<<std::endl;
             }
             internal::QueryGeneratorVisitor visitor;

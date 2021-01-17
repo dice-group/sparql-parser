@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <Dice/Sparql-Parser/Parser.hpp>
+#include <Dice/sparql-parser/Parser.hpp>
 
 #include "TestUtilites.hpp"
 

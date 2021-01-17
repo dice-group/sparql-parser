@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <vector>
-#include <map>
+
+#include <robin_hood.h>
 
 #include <SparqlParser/SparqlParserBaseVisitor.h>
-
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/SelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DefaultSelectNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/SelectNodes/DistinctSelectNode.hpp>
@@ -21,7 +21,6 @@
 #include <Dice/Sparql-Query/QueryNodes/SpecialNodes/OptionalPatternNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/GroupNode.hpp>
 #include <Dice/Sparql-Query/QueryNodes/EmptyNode.hpp>
-
 #include <Dice/rdf_parser/RDF/Term.hpp>
 #include <Dice/rdf_parser/Parser/Turtle/Parsers/StringParser.hpp>
 
@@ -40,7 +39,7 @@ namespace Dice::sparql_parser::internal {
     class QueryGeneratorVisitor : public Dice::tentris::SparqlParserBase::SparqlParserBaseVisitor {
 
     private:
-        std::map<std::string, std::string> prefixes;
+        robin_hood::unordered_map<std::string, std::string> prefixes;
 
     public:
 
@@ -48,7 +47,7 @@ namespace Dice::sparql_parser::internal {
         antlrcpp::Any visitQuery(Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *ctx) override {
 
             //get the prefiexes
-            prefixes = static_cast<std::map<std::string, std::string>>(visitPrologue(ctx->prologue()));
+            prefixes = static_cast<robin_hood::unordered_map<std::string, std::string>>(visitPrologue(ctx->prologue()));
 
             //For now the parser only supports Select queries.
             if (ctx->selectQuery() != NULL) {
@@ -63,7 +62,7 @@ namespace Dice::sparql_parser::internal {
     public:
 
         antlrcpp::Any visitPrologue(Dice::tentris::SparqlParserBase::SparqlParser::PrologueContext *ctx) override {
-            std::map<std::string, std::string> prefixes;
+            robin_hood::unordered_map<std::string, std::string> prefixes;
             if (ctx != nullptr) {
                 if (ctx->baseDecl(0) != nullptr) {
                     prefixes["Base"] = ctx->baseDecl(0)->IRIREF()->getText();

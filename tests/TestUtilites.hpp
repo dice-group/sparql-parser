@@ -6,7 +6,7 @@
 #define SPARQL_PARSER_TESTUTILITES_HPP
 
 #include <gtest/gtest.h>
-#include <Dice/Sparql-Parser/Parser.hpp>
+#include <Dice/sparql-parser/Parser.hpp>
 
 using namespace SparqlQueryGraph::Nodes::SelectNodes;
 
