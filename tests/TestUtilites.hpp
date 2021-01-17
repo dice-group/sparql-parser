@@ -16,7 +16,7 @@ public:
     void static checkResult(std::shared_ptr<SelectNode> result,
                      std::vector<std::vector<char>> expectedOperands,
                      std::vector<Dice::sparql::TriplePattern> expectedBgps,
-                     std::map<std::string,std::string> expectedPrefixes,
+                     robin_hood::unordered_map<std::string,std::string> expectedPrefixes,
                      std::vector<Dice::sparql::Variable> expectedSelectVariables,
                      std::vector<char> expectedSubscriptResult,
                      SelectModifier expectedSelectModifier

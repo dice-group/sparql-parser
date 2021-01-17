@@ -25,7 +25,7 @@ TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<dc:title>"),sparql::Variable("title")),
                                                    sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<ns:price>"),sparql::Variable("price"))};
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"book"},
                                                          sparql::Variable{"title"},
@@ -53,7 +53,7 @@ TEST(BasicBgpsTests, BasicSelectQueryDistinctTest) {
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<dc:title>"),sparql::Variable("title")),
                                                    sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<ns:price>"),sparql::Variable("price"))};
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"book"},
                                                          sparql::Variable{"title"},
@@ -82,7 +82,7 @@ TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<dc:title>"),sparql::Variable("title")),
                                                    sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<ns:price>"),sparql::Variable("price"))};
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"book"},
                                                          sparql::Variable{"title"},
@@ -107,7 +107,7 @@ TEST(BasicBgpsTests, multipleBgps) {
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://localhost/vocabulary/bench/Journal>")),
                                                    sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://swrc.ontoware.org/ontology#editor>"),sparql::Variable("e"))};
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"s"},
                                                          sparql::Variable{"e"}
@@ -131,7 +131,7 @@ TEST(BasicBgpsTests, multipleBgps2) {
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://localhost/vocabulary/bench/Article>")),
                                                    sparql::TriplePattern(sparql::Variable("s"),sparql::Variable("p"),sparql::Variable("o"))};
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"s"},
                                                          sparql::Variable{"p"},
@@ -163,7 +163,7 @@ TEST(BasicBgpsTests, multipleBgpsConnectedWithSemiColon) {
                                                    sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://www.w3.org/2000/01/rdf-schema#label>"),sparql::Variable("el"))
     };
 
-    std::map<std::string,std::string> expectedPrefixes{ {"rdfs","http://www.w3.org/2000/01/rdf-schema#"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{ {"rdfs","http://www.w3.org/2000/01/rdf-schema#"},
                                                         {"swc","http://data.semanticweb.org/ns/swc/ontology#"},
                                                         {"dce","http://purl.org/dc/elements/1.1/"}
     };
@@ -221,7 +221,7 @@ TEST(BasicBgpsTests, GroupGraphPatternInsideGroupOrUnionGraphPattern) {
                                                                         sparql::Variable("var3") )
     };
 
-    std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
                                                        {"wdt", "http://www.wikidata.org/prop/direct/"}
     };
 
@@ -291,7 +291,7 @@ TEST(BasicBgpsTests, GroupPatterns) {
                                                                         sparql::Variable("var3") )
     };
 
-    std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
                                                        {"wdt", "http://www.wikidata.org/prop/direct/"}
     };
 

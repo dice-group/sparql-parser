@@ -38,7 +38,7 @@ namespace Dice::sparql_parser::internal {
     using namespace sparql::Nodes::QueryNodes::SpecialNodes;
     using namespace sparql::Nodes;
 
-    class QueryGeneratorVisitor : public Dice::sparql_parser::base::SparqlParserBaseVisitor {
+    class QueryGeneratorVisitor : public  Dice::sparql_parser::base::SparqlParserBaseVisitor {
 
     private:
 

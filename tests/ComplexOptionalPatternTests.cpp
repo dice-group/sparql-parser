@@ -54,7 +54,7 @@ TEST(ComplexOptionalPatternTests, optionalWithBlankNodes) {
                                                                         sparql::Variable("var3") )
     };
 
-    std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
                                                        {"wdt", "http://www.wikidata.org/prop/direct/"}
     };
 

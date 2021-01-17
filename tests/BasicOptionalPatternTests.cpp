@@ -27,7 +27,7 @@ TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
                                                                         rdf::parse_term("<http://www.wikidata.org/entity/Q5>")
                                                                         )};
 
-    std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
                                                        {"wdt", "http://www.wikidata.org/prop/direct/"}
     };
 
@@ -58,7 +58,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsBeforeOptional) {
                                                    sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://swrc.ontoware.org/ontology#editor>"),sparql::Variable("e"))
                                                    };
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"s"},
                                                          sparql::Variable{"t"},
@@ -88,7 +88,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsInsideOptional) {
                                                    sparql::TriplePattern(sparql::Variable("j"),rdf::parse_term("<http://swrc.ontoware.org/ontology#editor>"),sparql::Variable("e"))
     };
 
-    std::map<std::string,std::string> expectedPrefixes{};
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c','d'};
     std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"a"},
                                                          sparql::Variable{"t"},
@@ -121,7 +121,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndOneOptional
                                                    sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#heldBy>"),sparql::Variable("person")),
                                                    sparql::TriplePattern(sparql::Variable("person"),rdf::parse_term("<http://xmlns.com/foaf/0.1/made>"),sparql::Variable("paper"))};
 
-    std::map<std::string,std::string> expectedPrefixes{ {"rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{ {"rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
                                                         {"swc","http://data.semanticweb.org/ns/swc/ontology#"},
                                                         {"foaf","http://xmlns.com/foaf/0.1/"}
     };
@@ -164,7 +164,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndTwoOptional
                                                    sparql::TriplePattern(sparql::Variable("paper"),rdf::parse_term("<http://purl.org/dc/elements/1.1/title>"),sparql::Variable("title")),
                                                    sparql::TriplePattern(sparql::Variable("paper"),rdf::parse_term("<http://purl.org/dc/elements/1.1/creator>"),sparql::Variable("author"))};
 
-    std::map<std::string,std::string> expectedPrefixes{ {"rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{ {"rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
                                                         {"swc","http://data.semanticweb.org/ns/swc/ontology#"},
                                                         {"foaf","http://xmlns.com/foaf/0.1/"},
                                                         {"dce","http://purl.org/dc/elements/1.1/"}
@@ -203,7 +203,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColon3) {
                                                    sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://purl.org/dc/elements/1.1/title>"),sparql::Variable("et"))
     };
 
-    std::map<std::string,std::string> expectedPrefixes{{"rdfs", "http://www.w3.org/2000/01/rdf-schema#"},
+    robin_hood::unordered_map<std::string,std::string> expectedPrefixes{{"rdfs", "http://www.w3.org/2000/01/rdf-schema#"},
                                                        {"swc",  "http://data.semanticweb.org/ns/swc/ontology#"},
                                                        {"dce",  "http://purl.org/dc/elements/1.1/"}
     };

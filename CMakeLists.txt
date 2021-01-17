@@ -29,10 +29,10 @@ target_include_directories(sparql-parser  INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${sparql-parser_INSTALL_CMAKE_DIR}>
         )
-target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
+target_link_libraries(sparql-parser INTERFACE  sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
 
-# require C++17
-target_compile_features(sparql-parser INTERFACE cxx_std_17)
+# require C++20
+target_compile_features(sparql-parser INTERFACE cxx_std_20)
 
 # Make package findable
 configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
