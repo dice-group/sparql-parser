@@ -10,7 +10,7 @@ include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
 find_package(sparql-parser-base REQUIRED)
 find_package(rdf-parser REQUIRED)
-find_package(sparql-queryGraph REQUIRED)
+find_package(sparql-query REQUIRED)
 
 # add the executable for all tests
 add_executable(tests Tests.cpp)
@@ -18,6 +18,6 @@ target_link_libraries(tests
         sparql-parser-base::sparql-parser-base
         sparql-parser
         )
-set_property(TARGET tests PROPERTY CXX_STANDARD 17)
+set_property(TARGET tests PROPERTY CXX_STANDARD 20)
 
 

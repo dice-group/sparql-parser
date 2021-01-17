@@ -1,9 +1,13 @@
 #include <gtest/gtest.h>
+
 #include <Dice/sparql-parser/Parser.hpp>
+#include <Dice/RDF/ParseTerm.hpp>
 
 #include "TestUtilites.hpp"
 
-using namespace SparqlQueryGraph::Nodes::SelectNodes;
+using namespace Dice::sparql::Nodes::QueryNodes::SelectNodes;
+using namespace Dice::sparql_parser;
+using namespace Dice;
 
 TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
     std::string query{
@@ -11,16 +15,16 @@ TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
             " SELECT * WHERE { ?var1 wdt:P31 wde:Q5 OPTIONAL { } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'['},
                                                      {']'}
     };
 
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/direct/P31>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q5>")
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/direct/P31>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q5>")
                                                                         )};
 
     std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
@@ -28,7 +32,7 @@ TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
     };
 
     std::vector<char> expectedSubscriptResult{'a'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"var1"} };
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"var1"} };
 
     SelectModifier selectModifier=SelectModifier::NONE;
 
@@ -41,7 +45,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsBeforeOptional) {
             "SELECT ?s ?t ?e WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal> . ?s <http://purl.org/dc/elements/1.1/title> ?t . OPTIONAL{?s <http://swrc.ontoware.org/ontology#editor> ?e}}"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b'},
@@ -49,16 +53,16 @@ TEST(BasicOptionalPatternTests, multipleBgpsBeforeOptional) {
                                                      {'a','c'},
                                                      {']'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("s"),Term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),Term("<http://localhost/vocabulary/bench/Journal>")),
-                                                   TriplePatternElement(TripleVariable("s"),Term("<http://purl.org/dc/elements/1.1/title>"),TripleVariable("t")),
-                                                   TriplePatternElement(TripleVariable("s"),Term("<http://swrc.ontoware.org/ontology#editor>"),TripleVariable("e"))
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://localhost/vocabulary/bench/Journal>")),
+                                                   sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://purl.org/dc/elements/1.1/title>"),sparql::Variable("t")),
+                                                   sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://swrc.ontoware.org/ontology#editor>"),sparql::Variable("e"))
                                                    };
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"s"},
-                                                         TripleVariable{"t"},
-                                                         TripleVariable{"e"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"s"},
+                                                         sparql::Variable{"t"},
+                                                         sparql::Variable{"e"}
     };
 
     SelectModifier selectModifier=SelectModifier::NONE;
@@ -71,7 +75,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsInsideOptional) {
             "SELECT ?a ?t ?j ?e WHERE {?a <http://purl.org/dc/elements/1.1/title> ?t . OPTIONAL { ?a <http://swrc.ontoware.org/ontology#journal> ?j . ?j <http://swrc.ontoware.org/ontology#editor> ?e  } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'['},
@@ -79,17 +83,17 @@ TEST(BasicOptionalPatternTests, multipleBgpsInsideOptional) {
                                                      {'c','d'},
                                                      {']'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("a"),Term("<http://purl.org/dc/elements/1.1/title>"),TripleVariable("t")),
-                                                   TriplePatternElement(TripleVariable("a"),Term("<http://swrc.ontoware.org/ontology#journal>"),TripleVariable("j")),
-                                                   TriplePatternElement(TripleVariable("j"),Term("<http://swrc.ontoware.org/ontology#editor>"),TripleVariable("e"))
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("a"),rdf::parse_term("<http://purl.org/dc/elements/1.1/title>"),sparql::Variable("t")),
+                                                   sparql::TriplePattern(sparql::Variable("a"),rdf::parse_term("<http://swrc.ontoware.org/ontology#journal>"),sparql::Variable("j")),
+                                                   sparql::TriplePattern(sparql::Variable("j"),rdf::parse_term("<http://swrc.ontoware.org/ontology#editor>"),sparql::Variable("e"))
     };
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c','d'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"a"},
-                                                         TripleVariable{"t"},
-                                                         TripleVariable{"j"},
-                                                         TripleVariable{"e"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"a"},
+                                                         sparql::Variable{"t"},
+                                                         sparql::Variable{"j"},
+                                                         sparql::Variable{"e"}
     };
 
     SelectModifier selectModifier=SelectModifier::NONE;
@@ -103,7 +107,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndOneOptional
             "SELECT DISTINCT ?person ?paper WHERE { ?role swc:isRoleAt <http://data.semanticweb.org/conference/eswc/2010> ; rdf:type swc:Chair ; swc:heldBy ?person OPTIONAL { ?person foaf:made ?paper } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a',},
@@ -112,18 +116,18 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndOneOptional
                                                      {'b','c'},
                                                      {']'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("role"),Term("<http://data.semanticweb.org/ns/swc/ontology#isRoleAt>"),Term("<http://data.semanticweb.org/conference/eswc/2010>")),
-                                                   TriplePatternElement(TripleVariable("role"),Term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),Term("<http://data.semanticweb.org/ns/swc/ontology#Chair>")),
-                                                   TriplePatternElement(TripleVariable("role"),Term("<http://data.semanticweb.org/ns/swc/ontology#heldBy>"),TripleVariable("person")),
-                                                   TriplePatternElement(TripleVariable("person"),Term("<http://xmlns.com/foaf/0.1/made>"),TripleVariable("paper"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#isRoleAt>"),rdf::parse_term("<http://data.semanticweb.org/conference/eswc/2010>")),
+                                                   sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#Chair>")),
+                                                   sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#heldBy>"),sparql::Variable("person")),
+                                                   sparql::TriplePattern(sparql::Variable("person"),rdf::parse_term("<http://xmlns.com/foaf/0.1/made>"),sparql::Variable("paper"))};
 
     std::map<std::string,std::string> expectedPrefixes{ {"rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
                                                         {"swc","http://data.semanticweb.org/ns/swc/ontology#"},
                                                         {"foaf","http://xmlns.com/foaf/0.1/"}
     };
     std::vector<char> expectedSubscriptResult{'b','c'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"person"},
-                                                         TripleVariable{"paper"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"person"},
+                                                         sparql::Variable{"paper"}
     };
 
     SelectModifier selectModifier=SelectModifier::DISTINCT;
@@ -138,7 +142,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndTwoOptional
             " SELECT DISTINCT ?name ?title ?author WHERE { ?role swc:isRoleAt <http://data.semanticweb.org/conference/eswc/2010> ; rdf:type swc:Chair ; swc:heldBy ?person . ?person foaf:name ?name OPTIONAL { ?person foaf:made ?paper . ?paper dce:title ?title } OPTIONAL { ?paper dce:creator ?author } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a',},
@@ -152,13 +156,13 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndTwoOptional
                                                      {'d','f'},
                                                      {']'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("role"),Term("<http://data.semanticweb.org/ns/swc/ontology#isRoleAt>"),Term("<http://data.semanticweb.org/conference/eswc/2010>")),
-                                                   TriplePatternElement(TripleVariable("role"),Term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),Term("<http://data.semanticweb.org/ns/swc/ontology#Chair>")),
-                                                   TriplePatternElement(TripleVariable("role"),Term("<http://data.semanticweb.org/ns/swc/ontology#heldBy>"),TripleVariable("person")),
-                                                   TriplePatternElement(TripleVariable("person"),Term("<http://xmlns.com/foaf/0.1/name>"),TripleVariable("name")),
-                                                   TriplePatternElement(TripleVariable("person"),Term("<http://xmlns.com/foaf/0.1/made>"),TripleVariable("paper")),
-                                                   TriplePatternElement(TripleVariable("paper"),Term("<http://purl.org/dc/elements/1.1/title>"),TripleVariable("title")),
-                                                   TriplePatternElement(TripleVariable("paper"),Term("<http://purl.org/dc/elements/1.1/creator>"),TripleVariable("author"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#isRoleAt>"),rdf::parse_term("<http://data.semanticweb.org/conference/eswc/2010>")),
+                                                   sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#Chair>")),
+                                                   sparql::TriplePattern(sparql::Variable("role"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#heldBy>"),sparql::Variable("person")),
+                                                   sparql::TriplePattern(sparql::Variable("person"),rdf::parse_term("<http://xmlns.com/foaf/0.1/name>"),sparql::Variable("name")),
+                                                   sparql::TriplePattern(sparql::Variable("person"),rdf::parse_term("<http://xmlns.com/foaf/0.1/made>"),sparql::Variable("paper")),
+                                                   sparql::TriplePattern(sparql::Variable("paper"),rdf::parse_term("<http://purl.org/dc/elements/1.1/title>"),sparql::Variable("title")),
+                                                   sparql::TriplePattern(sparql::Variable("paper"),rdf::parse_term("<http://purl.org/dc/elements/1.1/creator>"),sparql::Variable("author"))};
 
     std::map<std::string,std::string> expectedPrefixes{ {"rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#"},
                                                         {"swc","http://data.semanticweb.org/ns/swc/ontology#"},
@@ -166,9 +170,9 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndTwoOptional
                                                         {"dce","http://purl.org/dc/elements/1.1/"}
     };
     std::vector<char> expectedSubscriptResult{'c','e','f'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"name"},
-                                                         TripleVariable{"title"},
-                                                         TripleVariable{"author"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"name"},
+                                                         sparql::Variable{"title"},
+                                                         sparql::Variable{"author"}
     };
 
     SelectModifier selectModifier=SelectModifier::DISTINCT;
@@ -183,7 +187,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColon3) {
             " SELECT ?el ?et WHERE { <http://data.semanticweb.org/workshop/usewod/2012> swc:hasLocation ?l . ?e swc:hasLocation ?l ; rdfs:label ?el OPTIONAL { ?e dce:title ?et } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'b','a'},
@@ -193,10 +197,10 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColon3) {
                                                      {']'}
     };
 
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(Term("<http://data.semanticweb.org/workshop/usewod/2012>"),Term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),TripleVariable("l")),
-                                                   TriplePatternElement(TripleVariable("e"),Term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),TripleVariable("l")),
-                                                   TriplePatternElement(TripleVariable("e"),Term("<http://www.w3.org/2000/01/rdf-schema#label>"),TripleVariable("el")),
-                                                   TriplePatternElement(TripleVariable("e"),Term("<http://purl.org/dc/elements/1.1/title>"),TripleVariable("et"))
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(rdf::parse_term("<http://data.semanticweb.org/workshop/usewod/2012>"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),sparql::Variable("l")),
+                                                   sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),sparql::Variable("l")),
+                                                   sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://www.w3.org/2000/01/rdf-schema#label>"),sparql::Variable("el")),
+                                                   sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://purl.org/dc/elements/1.1/title>"),sparql::Variable("et"))
     };
 
     std::map<std::string,std::string> expectedPrefixes{{"rdfs", "http://www.w3.org/2000/01/rdf-schema#"},
@@ -205,8 +209,8 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColon3) {
     };
 
     std::vector<char> expectedSubscriptResult{'c','d'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"el"},
-                                                         TripleVariable{"et"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"el"},
+                                                         sparql::Variable{"et"}
     };
 
     SelectModifier selectModifier=SelectModifier::NONE;

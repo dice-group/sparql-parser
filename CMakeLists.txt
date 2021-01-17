@@ -14,7 +14,7 @@ include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
 find_package(sparql-parser-base REQUIRED)
 find_package(rdf-parser REQUIRED)
-find_package(sparql-queryGraph REQUIRED)
+find_package(sparql-query REQUIRED)
 find_package(robin_hood REQUIRED)
 
 # installation directories
@@ -29,7 +29,7 @@ target_include_directories(sparql-parser  INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${sparql-parser_INSTALL_CMAKE_DIR}>
         )
-target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-queryGraph::sparql-queryGraph robin_hood::robin_hood)
+target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
 
 # require C++17
 target_compile_features(sparql-parser INTERFACE cxx_std_17)

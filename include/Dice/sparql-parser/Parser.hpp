@@ -12,19 +12,19 @@ namespace Dice::sparql_parser {
     class Parser {
 
     private:
-        static Dice::tentris::SparqlParserBase::SparqlParser *createParser(std::string text) {
+        static Dice::sparql_parser::base::SparqlParser *createParser(std::string text) {
             antlr4::ANTLRInputStream *input = new antlr4::ANTLRInputStream(text);
-            Dice::tentris::SparqlParserBase::SparqlLexer *lexer = new Dice::tentris::SparqlParserBase::SparqlLexer(input);
+            Dice::sparql_parser::base::SparqlLexer *lexer = new Dice::sparql_parser::base::SparqlLexer(input);
             antlr4::CommonTokenStream *tokens = new antlr4::CommonTokenStream(lexer);
-            Dice::tentris::SparqlParserBase::SparqlParser *parser = new Dice::tentris::SparqlParserBase::SparqlParser(tokens);
+            Dice::sparql_parser::base::SparqlParser *parser = new Dice::sparql_parser::base::SparqlParser(tokens);
             return parser;
         }
 
     public:
-        static std::shared_ptr<SparqlQueryGraph::Nodes::SelectNodes::SelectNode> parseSelectQuery(std::string query) {
+        static std::shared_ptr<Dice::sparql::Nodes::QueryNodes::SelectNodes::SelectNode> parseSelectQuery(std::string query) {
 
-            Dice::tentris::SparqlParserBase::SparqlParser *parser;
-            Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *tree;
+            Dice::sparql_parser::base::SparqlParser *parser;
+            Dice::sparql_parser::base::SparqlParser::QueryContext *tree;
             try {
                 parser = createParser(query);
                 tree = parser->query();
@@ -33,7 +33,7 @@ namespace Dice::sparql_parser {
                 std::cout<<exception.what()<<std::endl;
             }
             internal::QueryGeneratorVisitor visitor;
-            std::shared_ptr<SparqlQueryGraph::Nodes::SelectNodes::SelectNode> selectNode = visitor.visitQuery(tree);
+            std::shared_ptr<Dice::sparql::Nodes::QueryNodes::SelectNodes::SelectNode> selectNode = visitor.visitQuery(tree);
             return selectNode;
 
         }

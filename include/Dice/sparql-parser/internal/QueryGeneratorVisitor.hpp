@@ -11,18 +11,18 @@
 #include <robin_hood.h>
 
 #include <SparqlParser/SparqlParserBaseVisitor.h>
-#include <Dice/Sparql-Query/QueryNodes/SelectNodes/SelectNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/SelectNodes/DefaultSelectNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/SelectNodes/DistinctSelectNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/SelectNodes/ReducedSelectNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/leafNodes/TriplePatternNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/SolutionDecorator.hpp>
-#include <Dice/Sparql-Query/TriplePatternElement.hpp>
-#include <Dice/Sparql-Query/QueryNodes/SpecialNodes/OptionalPatternNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/GroupNode.hpp>
-#include <Dice/Sparql-Query/QueryNodes/EmptyNode.hpp>
-#include <Dice/rdf_parser/RDF/Term.hpp>
-#include <Dice/rdf_parser/Parser/Turtle/Parsers/StringParser.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/SelectNodes/SelectNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/SelectNodes/DefaultSelectNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/SelectNodes/DistinctSelectNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/SelectNodes/ReducedSelectNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/leafNodes/TriplePatternNode.hpp>
+#include <Dice/sparql-query/Nodes/SolutionDecorator.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/SpecialNodes/OptionalPatternNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/GroupNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/EmptyNode.hpp>
+#include <Dice/RDF/Term.hpp>
+
+#include <Dice/rdf-parser/internal/Turtle/Parsers/TriplesBlockStringParser.hpp>
 
 
 #include "SelectNodeType.hpp"
@@ -31,20 +31,23 @@
 
 
 namespace Dice::sparql_parser::internal {
-    using namespace SparqlQueryGraph::Nodes::GraphNodes;
-    using namespace SparqlQueryGraph::Nodes::SelectNodes;
-    using namespace SparqlQueryGraph::Nodes::Modifiers;
-    using namespace SparqlQueryGraph::Nodes;
 
-    class QueryGeneratorVisitor : public Dice::tentris::SparqlParserBase::SparqlParserBaseVisitor {
+    using namespace sparql::Nodes::QueryNodes::SelectNodes;
+    using namespace sparql::Nodes::QueryNodes::LeafNodes;
+    using namespace sparql::Nodes::SolutionModifiers;
+    using namespace sparql::Nodes::QueryNodes::SpecialNodes;
+    using namespace sparql::Nodes;
+
+    class QueryGeneratorVisitor : public Dice::sparql_parser::base::SparqlParserBaseVisitor {
 
     private:
+
         robin_hood::unordered_map<std::string, std::string> prefixes;
 
     public:
 
 
-        antlrcpp::Any visitQuery(Dice::tentris::SparqlParserBase::SparqlParser::QueryContext *ctx) override {
+        antlrcpp::Any visitQuery(Dice::sparql_parser::base::SparqlParser::QueryContext *ctx) override {
 
             //get the prefiexes
             prefixes = static_cast<robin_hood::unordered_map<std::string, std::string>>(visitPrologue(ctx->prologue()));
@@ -59,9 +62,7 @@ namespace Dice::sparql_parser::internal {
 
         }
 
-    public:
-
-        antlrcpp::Any visitPrologue(Dice::tentris::SparqlParserBase::SparqlParser::PrologueContext *ctx) override {
+        antlrcpp::Any visitPrologue(Dice::sparql_parser::base::SparqlParser::PrologueContext *ctx) override {
             robin_hood::unordered_map<std::string, std::string> prefixes;
             if (ctx != nullptr) {
                 if (ctx->baseDecl(0) != nullptr) {
@@ -81,45 +82,45 @@ namespace Dice::sparql_parser::internal {
         }
 
         antlrcpp::Any
-        visitSelectQuery(Dice::tentris::SparqlParserBase::SparqlParser::SelectQueryContext *ctx) override {
+        visitSelectQuery(Dice::sparql_parser::base::SparqlParser::SelectQueryContext *ctx) override {
 
             std::shared_ptr<SelectNode> selectNode;
-            std::shared_ptr<IQueryNode> queryNode;
+            std::shared_ptr<Node> node;
 
             //visit where clause
-            std::shared_ptr<ICommandNode> commandNode = visitWhereClause(ctx->whereClause());
+            std::shared_ptr<QueryNodes::QueryNode> queryNode = visitWhereClause(ctx->whereClause());
 
             //get all solution modifiers. visitSolutionModifier() must handle the order.
-            std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers = visitSolutionModifier(
+            std::vector<std::shared_ptr<SolutionModifier>> solutionModifiers = visitSolutionModifier(
                     ctx->solutionModifier());
 
             //deal with the solution modifiers
             if (solutionModifiers.size() != 0) {
 
                 //get the first modifier
-                std::shared_ptr<ISolutionModifier> firstModifier = solutionModifiers.front();
+                std::shared_ptr<SolutionModifier> firstModifier = solutionModifiers.front();
                 solutionModifiers.pop_back();
-                std::shared_ptr<SolutionDecorator> solutionDecorator = std::make_shared<SolutionDecorator>(commandNode,
+                std::shared_ptr<SolutionDecorator> solutionDecorator = std::make_shared<SolutionDecorator>(queryNode,
                                                                                                            firstModifier);
 
                 //go through the rest of the modifiers and add them to the decorator
                 for (auto const &solutionModifier : solutionModifiers)
                     solutionDecorator = std::make_shared<SolutionDecorator>(solutionDecorator, solutionModifier);
 
-                queryNode = solutionDecorator;
+                node = solutionDecorator;
             } else
-                queryNode = commandNode;
+                node = queryNode;
 
             //deal with the SelectClause to define the SelectNode Type(Distinct,Reduced,Default) and to get the select variables
             SelectClause clause = visitSelectClause(ctx->selectClause());
 
             //create the selectNode
             if (clause.nodeType == SelectNodeType::DISTINCT)
-                selectNode = std::make_shared<DistinctSelectNode>(queryNode, clause.selectVariables, prefixes);
+                selectNode = std::make_shared<DistinctSelectNode>(node, clause.selectVariables, prefixes);
             else if (clause.nodeType == SelectNodeType::REDUCED)
-                selectNode = std::make_shared<ReducedSelectNode>(queryNode, clause.selectVariables, prefixes);
+                selectNode = std::make_shared<ReducedSelectNode>(node, clause.selectVariables, prefixes);
             else
-                selectNode = std::make_shared<DefaultSelectNode>(queryNode, clause.selectVariables, prefixes);
+                selectNode = std::make_shared<DefaultSelectNode>(node, clause.selectVariables, prefixes);
 
             return selectNode;
 
@@ -127,7 +128,7 @@ namespace Dice::sparql_parser::internal {
 
 
         antlrcpp::Any
-        visitSelectClause(Dice::tentris::SparqlParserBase::SparqlParser::SelectClauseContext *ctx) override {
+        visitSelectClause(Dice::sparql_parser::base::SparqlParser::SelectClauseContext *ctx) override {
 
             SelectClause selectClause;
 
@@ -142,12 +143,12 @@ namespace Dice::sparql_parser::internal {
             selectClause.nodeType = nodeType;
 
             //deal with the variables
-            std::vector<TripleVariable> selectVariables;
+            std::vector<sparql::Variable> selectVariables;
             if (ctx->ASTERISK() != nullptr)
-                selectVariables.push_back(TripleVariable("*"));
+                selectVariables.push_back(sparql::Variable("*"));
             else {
                 for (auto selectVariable:ctx->selectVariables()) {
-                    selectVariables.push_back(TripleVariable(
+                    selectVariables.push_back(sparql::Variable(
                             std::string(selectVariable->getText(), 1, selectVariable->getText().size() - 1)));
                 }
             }
@@ -157,7 +158,7 @@ namespace Dice::sparql_parser::internal {
         }
 
         antlrcpp::Any
-        visitSelectModifier(Dice::tentris::SparqlParserBase::SparqlParser::SelectModifierContext *ctx) override {
+        visitSelectModifier(Dice::sparql_parser::base::SparqlParser::SelectModifierContext *ctx) override {
 
             std::string nodeTypeRaw = ctx->getText();
             SelectNodeType nodeType;
@@ -172,8 +173,8 @@ namespace Dice::sparql_parser::internal {
 
 
         antlrcpp::Any
-        visitSolutionModifier(Dice::tentris::SparqlParserBase::SparqlParser::SolutionModifierContext *ctx) override {
-            std::vector<std::shared_ptr<ISolutionModifier>> solutionModifiers;
+        visitSolutionModifier(Dice::sparql_parser::base::SparqlParser::SolutionModifierContext *ctx) override {
+            std::vector<std::shared_ptr<SolutionModifier>> solutionModifiers;
 
             if (ctx->groupClause() != nullptr) {
                 throw NotImplementedException();
@@ -196,99 +197,99 @@ namespace Dice::sparql_parser::internal {
 
 
         antlrcpp::Any
-        visitWhereClause(Dice::tentris::SparqlParserBase::SparqlParser::WhereClauseContext *ctx) override {
+        visitWhereClause(Dice::sparql_parser::base::SparqlParser::WhereClauseContext *ctx) override {
             return visitGroupGraphPattern(ctx->groupGraphPattern());
 
         }
 
 
         antlrcpp::Any
-        visitGroupGraphPattern(Dice::tentris::SparqlParserBase::SparqlParser::GroupGraphPatternContext *ctx) override {
-            std::shared_ptr<ICommandNode> commandNode;
+        visitGroupGraphPattern(Dice::sparql_parser::base::SparqlParser::GroupGraphPatternContext *ctx) override {
+            std::shared_ptr<QueryNodes::QueryNode> queryNode;
 
             if (ctx->subSelect() != nullptr)
-                commandNode = visitSubSelect(ctx->subSelect());
+                queryNode = visitSubSelect(ctx->subSelect());
             else
-                commandNode = visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
+                queryNode = visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
 
-            if(commandNode== nullptr)
-                commandNode=std::make_shared<Nodes::EmptyNode>();
-            return commandNode;
+            if(queryNode== nullptr)
+                queryNode=std::make_shared<QueryNodes::EmptyNode>();
+            return queryNode;
         }
 
         antlrcpp::Any
         visitGroupGraphPatternSub(
-                Dice::tentris::SparqlParserBase::SparqlParser::GroupGraphPatternSubContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::GroupGraphPatternSubContext *ctx) override {
 
-            std::shared_ptr<ICommandNode> commandNode;
+            std::shared_ptr<QueryNodes::QueryNode> queryNode;
 
             if (ctx->groupGraphPatternSubList().empty()) {
                 if (ctx->triplesBlock() != nullptr) {
-                    commandNode = visitTriplesBlock(ctx->triplesBlock());
+                    queryNode = visitTriplesBlock(ctx->triplesBlock());
                 } else
                 {
-                    commandNode = std::make_shared<Nodes::EmptyNode>();
+                    queryNode = std::make_shared<QueryNodes::EmptyNode>();
                 }
             } else {
                 if ((ctx->triplesBlock() == nullptr) && (ctx->groupGraphPatternSubList().size() == 1)) {
-                    commandNode = visitGroupGraphPatternSubList(ctx->groupGraphPatternSubList()[0]);
+                    queryNode = visitGroupGraphPatternSubList(ctx->groupGraphPatternSubList()[0]);
                 } else {
-                    std::shared_ptr<GroupNode> groupNode = std::make_shared<GroupNode>();
+                    std::shared_ptr<QueryNodes::GroupNode> groupNode = std::make_shared<QueryNodes::GroupNode>();
                     if (ctx->triplesBlock() != nullptr)
                         groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
                     for (auto &subList:ctx->groupGraphPatternSubList())
                         groupNode->addChild(visitGroupGraphPatternSubList(subList));
-                    commandNode = std::dynamic_pointer_cast<ICommandNode>(groupNode);
+                    queryNode = std::dynamic_pointer_cast<QueryNodes::QueryNode>(groupNode);
                 }
             }
-            return commandNode;
+            return queryNode;
 
         }
 
 
         antlrcpp::Any visitGroupGraphPatternSubList(
-                Dice::tentris::SparqlParserBase::SparqlParser::GroupGraphPatternSubListContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::GroupGraphPatternSubListContext *ctx) override {
 
-            std::shared_ptr<ICommandNode> commandNode;
+            std::shared_ptr<QueryNodes::QueryNode> queryNode;
 
             //Deal with the triplesBlock
             if (ctx->triplesBlock() != nullptr) {
-                std::shared_ptr<GroupNode> groupNode = std::make_shared<GroupNode>();
+                std::shared_ptr<QueryNodes::GroupNode> groupNode = std::make_shared<QueryNodes::GroupNode>();
                 groupNode->addChild(visitGraphPatternNotTriples(ctx->graphPatternNotTriples()));
                 groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
-                commandNode = std::dynamic_pointer_cast<ICommandNode>(groupNode);
+                queryNode = std::dynamic_pointer_cast<QueryNodes::QueryNode>(groupNode);
             } else
-                commandNode = visitGraphPatternNotTriples(ctx->graphPatternNotTriples());
+                queryNode = visitGraphPatternNotTriples(ctx->graphPatternNotTriples());
 
-            return commandNode;
+            return queryNode;
         }
 
         antlrcpp::Any
-        visitTriplesBlock(Dice::tentris::SparqlParserBase::SparqlParser::TriplesBlockContext *ctx) override {
-            std::shared_ptr<ICommandNode> commandNode;
-            std::vector<TriplePatternElement> elements;
+        visitTriplesBlock(Dice::sparql_parser::base::SparqlParser::TriplesBlockContext *ctx) override {
+            std::shared_ptr<QueryNodes::QueryNode> queryNode;
+            std::vector<sparql::TriplePattern> elements;
             //The following logic is to add (deleted)whitespaces between the tokens in order to process it by the rdf_parser
             auto getTriplesSameSubjectPathText = [&](
-                    Dice::tentris::SparqlParserBase::SparqlParser::TriplesBlockContext *ctx) -> std::string {
+                    Dice::sparql_parser::base::SparqlParser::TriplesBlockContext *ctx) -> std::string {
                 std::string text = "";
                 for (auto &it:ctx->triplesSameSubjectPath())
                     text += static_cast<std::string>(visitTriplesSameSubjectPath(it)) + " . ";
                 return text;
             };
-            rdf_parser::Turtle::parsers::StringParser<true> parser(getTriplesSameSubjectPathText(ctx), prefixes);
+            rdf_parser::internal::Turtle::Parsers::TriplesBlockStringParser parser(getTriplesSameSubjectPathText(ctx), prefixes);
             auto it = parser.begin();
             while (it) {
                 //ToDo check this
-                TriplePatternElement triple = (TriplePatternElement &&) *it;
+                sparql::TriplePattern triple = (sparql::TriplePattern &&) *it;
                 elements.push_back(triple);
                 it++;
             }
-            commandNode = std::make_shared<TriplePatternNode>(elements);
-            return commandNode;
+            queryNode = std::make_shared<TriplePatternNode>(elements);
+            return queryNode;
         }
 
         antlrcpp::Any visitTriplesSameSubjectPath(
-                Dice::tentris::SparqlParserBase::SparqlParser::TriplesSameSubjectPathContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::TriplesSameSubjectPathContext *ctx) override {
             std::string result;
             if (ctx->varOrTerm() != nullptr)
                 result = ctx->varOrTerm()->getText() + " " +
@@ -301,7 +302,7 @@ namespace Dice::sparql_parser::internal {
 
 
         antlrcpp::Any visitPropertyListPathNotEmpty(
-                Dice::tentris::SparqlParserBase::SparqlParser::PropertyListPathNotEmptyContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::PropertyListPathNotEmptyContext *ctx) override {
             std::string result;
             std::string verb;
             if (ctx->verbPath() != nullptr)
@@ -315,7 +316,7 @@ namespace Dice::sparql_parser::internal {
         }
 
         antlrcpp::Any visitPropertyListPathNotEmptyList(
-                Dice::tentris::SparqlParserBase::SparqlParser::PropertyListPathNotEmptyListContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::PropertyListPathNotEmptyListContext *ctx) override {
             std::string result;
             if (ctx->verbPath() != nullptr)
                 result = ctx->verbPath()->getText();
@@ -326,7 +327,7 @@ namespace Dice::sparql_parser::internal {
         }
 
         antlrcpp::Any
-        visitTriplesNodePath(Dice::tentris::SparqlParserBase::SparqlParser::TriplesNodePathContext *ctx) override {
+        visitTriplesNodePath(Dice::sparql_parser::base::SparqlParser::TriplesNodePathContext *ctx) override {
             std::string result;
             if (ctx->collectionPath() != nullptr)
                 result = ctx->collectionPath()->getText();
@@ -337,19 +338,19 @@ namespace Dice::sparql_parser::internal {
         }
 
         antlrcpp::Any visitBlankNodePropertyListPath(
-                Dice::tentris::SparqlParserBase::SparqlParser::BlankNodePropertyListPathContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::BlankNodePropertyListPathContext *ctx) override {
             return "[" + static_cast<std::string>(visitPropertyListPathNotEmpty(ctx->propertyListPathNotEmpty())) + "]";
         }
 
         antlrcpp::Any visitGraphPatternNotTriples(
-                Dice::tentris::SparqlParserBase::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::GraphPatternNotTriplesContext *ctx) override {
 
-            std::shared_ptr<ICommandNode> commandNode;
+            std::shared_ptr<QueryNodes::QueryNode> queryNode;
 
             if (ctx->groupOrUnionGraphPattern()!= nullptr) {
-                commandNode=visitGroupOrUnionGraphPattern(ctx->groupOrUnionGraphPattern());
+                queryNode=visitGroupOrUnionGraphPattern(ctx->groupOrUnionGraphPattern());
             } else if (ctx->optionalGraphPattern() != nullptr) {
-                commandNode = visitOptionalGraphPattern(ctx->optionalGraphPattern());
+                queryNode = visitOptionalGraphPattern(ctx->optionalGraphPattern());
             } else if (ctx->minusGraphPattern() != nullptr) {
                 throw NotImplementedException();
             } else if (ctx->graphGraphPattern() != nullptr) {
@@ -366,21 +367,21 @@ namespace Dice::sparql_parser::internal {
             }
 
 
-            return commandNode;
+            return queryNode;
         }
 
         antlrcpp::Any visitOptionalGraphPattern(
-                Dice::tentris::SparqlParserBase::SparqlParser::OptionalGraphPatternContext *ctx) override {
-            std::shared_ptr<ICommandNode> node = visitGroupGraphPattern(ctx->groupGraphPattern());
-            std::shared_ptr<OptionalPatternNode> optionalNode = std::make_shared<OptionalPatternNode>(node);
-            std::shared_ptr<ICommandNode> commandNode = std::dynamic_pointer_cast<ICommandNode>(optionalNode);
-            return commandNode;
+                Dice::sparql_parser::base::SparqlParser::OptionalGraphPatternContext *ctx) override {
+            std::shared_ptr<QueryNodes::QueryNode> queryNode = visitGroupGraphPattern(ctx->groupGraphPattern());
+            std::shared_ptr<OptionalPatternNode> optionalNode = std::make_shared<OptionalPatternNode>(queryNode);
+            std::shared_ptr<QueryNodes::QueryNode> innerNode = std::dynamic_pointer_cast<QueryNodes::QueryNode>(optionalNode);
+            return innerNode;
 
 
         }
 
         antlrcpp::Any visitGroupOrUnionGraphPattern(
-                Dice::tentris::SparqlParserBase::SparqlParser::GroupOrUnionGraphPatternContext *ctx) override {
+                Dice::sparql_parser::base::SparqlParser::GroupOrUnionGraphPatternContext *ctx) override {
             if(!ctx->UNION().empty())
                 throw NotImplementedException();
             else

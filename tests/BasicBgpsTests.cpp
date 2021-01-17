@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
-#include <Dice/sparql-parser/Parser.hpp>
-#include <search.h>
+
+#include <Dice/RDF/ParseTerm.hpp>
 
 #include "TestUtilites.hpp"
+#include <Dice/sparql-parser/Parser.hpp>
 
-using namespace SparqlQueryGraph::Nodes::SelectNodes;
-
+using namespace Dice::sparql::Nodes::QueryNodes::SelectNodes;
+using namespace Dice::sparql_parser;
+using namespace Dice;
 
 TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
     std::string query{
@@ -15,19 +17,19 @@ TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
             "         <ns:price> ?price ."
             "  }"};
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
                                                     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("book"),Term("<dc:title>"),TripleVariable("title")),
-                                                   TriplePatternElement(TripleVariable("book"),Term("<ns:price>"),TripleVariable("price"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<dc:title>"),sparql::Variable("title")),
+                                                   sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<ns:price>"),sparql::Variable("price"))};
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"book"},
-                                                         TripleVariable{"title"},
-                                                         TripleVariable{"price"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"book"},
+                                                         sparql::Variable{"title"},
+                                                         sparql::Variable{"price"}
                                                        };
     SelectModifier selectModifier=SelectModifier::NONE;
 
@@ -43,19 +45,19 @@ TEST(BasicBgpsTests, BasicSelectQueryDistinctTest) {
             "         <ns:price> ?price ."
             "  }"};
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("book"),Term("<dc:title>"),TripleVariable("title")),
-                                                   TriplePatternElement(TripleVariable("book"),Term("<ns:price>"),TripleVariable("price"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<dc:title>"),sparql::Variable("title")),
+                                                   sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<ns:price>"),sparql::Variable("price"))};
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"book"},
-                                                         TripleVariable{"title"},
-                                                         TripleVariable{"price"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"book"},
+                                                         sparql::Variable{"title"},
+                                                         sparql::Variable{"price"}
     };
 
     SelectModifier selectModifier=SelectModifier::DISTINCT;
@@ -71,20 +73,20 @@ TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
             "         <ns:price> ?price ."
             "  }"};
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("book"),Term("<dc:title>"),TripleVariable("title")),
-                                                   TriplePatternElement(TripleVariable("book"),Term("<ns:price>"),TripleVariable("price"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<dc:title>"),sparql::Variable("title")),
+                                                   sparql::TriplePattern(sparql::Variable("book"),rdf::parse_term("<ns:price>"),sparql::Variable("price"))};
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"book"},
-                                                         TripleVariable{"title"},
-                                                         TripleVariable{"price"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"book"},
+                                                         sparql::Variable{"title"},
+                                                         sparql::Variable{"price"}
     };
 
     SelectModifier selectModifier=SelectModifier::REDUCE;
@@ -97,18 +99,18 @@ TEST(BasicBgpsTests, multipleBgps) {
             "SELECT ?s ?e WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal>.?s <http://swrc.ontoware.org/ontology#editor> ?e}"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("s"),Term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),Term("<http://localhost/vocabulary/bench/Journal>")),
-                                                   TriplePatternElement(TripleVariable("s"),Term("<http://swrc.ontoware.org/ontology#editor>"),TripleVariable("e"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://localhost/vocabulary/bench/Journal>")),
+                                                   sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://swrc.ontoware.org/ontology#editor>"),sparql::Variable("e"))};
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"s"},
-                                                         TripleVariable{"e"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"s"},
+                                                         sparql::Variable{"e"}
                                                         };
 
     SelectModifier selectModifier=SelectModifier::NONE;
@@ -121,19 +123,19 @@ TEST(BasicBgpsTests, multipleBgps2) {
             "SELECT DISTINCT ?s ?p ?o WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Article> . ?s ?p ?o .}"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b','c'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("s"),Term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),Term("<http://localhost/vocabulary/bench/Article>")),
-                                                   TriplePatternElement(TripleVariable("s"),TripleVariable("p"),TripleVariable("o"))};
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("s"),rdf::parse_term("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"),rdf::parse_term("<http://localhost/vocabulary/bench/Article>")),
+                                                   sparql::TriplePattern(sparql::Variable("s"),sparql::Variable("p"),sparql::Variable("o"))};
 
     std::map<std::string,std::string> expectedPrefixes{};
     std::vector<char> expectedSubscriptResult{'a','b','c'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"s"},
-                                                         TripleVariable{"p"},
-                                                         TripleVariable{"o"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"s"},
+                                                         sparql::Variable{"p"},
+                                                         sparql::Variable{"o"}
     };
 
     SelectModifier selectModifier=SelectModifier::DISTINCT;
@@ -150,15 +152,15 @@ TEST(BasicBgpsTests, multipleBgpsConnectedWithSemiColon) {
             " SELECT ?el ?et WHERE { <http://data.semanticweb.org/workshop/usewod/2012> swc:hasLocation ?l . ?e swc:hasLocation ?l ; rdfs:label ?el }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'b','a'},
                                                      {'b','c'}
     };
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(Term("<http://data.semanticweb.org/workshop/usewod/2012>"),Term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),TripleVariable("l")),
-                                                   TriplePatternElement(TripleVariable("e"),Term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),TripleVariable("l")),
-                                                   TriplePatternElement(TripleVariable("e"),Term("<http://www.w3.org/2000/01/rdf-schema#label>"),TripleVariable("el"))
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(rdf::parse_term("<http://data.semanticweb.org/workshop/usewod/2012>"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),sparql::Variable("l")),
+                                                   sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://data.semanticweb.org/ns/swc/ontology#hasLocation>"),sparql::Variable("l")),
+                                                   sparql::TriplePattern(sparql::Variable("e"),rdf::parse_term("<http://www.w3.org/2000/01/rdf-schema#label>"),sparql::Variable("el"))
     };
 
     std::map<std::string,std::string> expectedPrefixes{ {"rdfs","http://www.w3.org/2000/01/rdf-schema#"},
@@ -166,8 +168,8 @@ TEST(BasicBgpsTests, multipleBgpsConnectedWithSemiColon) {
                                                         {"dce","http://purl.org/dc/elements/1.1/"}
     };
     std::vector<char> expectedSubscriptResult{'c','d'};
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"el"},
-                                                         TripleVariable{"et"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"el"},
+                                                         sparql::Variable{"et"}
     };
 
     SelectModifier selectModifier=SelectModifier::NONE;
@@ -184,39 +186,39 @@ TEST(BasicBgpsTests, GroupGraphPatternInsideGroupOrUnionGraphPattern) {
             " { ?var1 <http://www.wikidata.org/prop/P463> _:b1 . _:b1 <http://www.wikidata.org/prop/statement/P463> wde:Q202479 ; <http://www.wikidata.org/prop/qualifier/P582> ?var3 } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/direct/P463>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q202479>") ),
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/direct/P463>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q202479>") ),
 
-                                                   TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/direct/P31>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q5>") ),
+                                                   sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/direct/P31>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q5>") ),
 
-                                                   TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/P463>"),
-                                                                        TripleVariable("b0") ),
+                                                   sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/P463>"),
+                                                                        sparql::Variable("b0") ),
 
-                                                   TriplePatternElement(TripleVariable("b0") ,
-                                                                        Term("<http://www.wikidata.org/prop/statement/P463>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q202479>")),
+                                                   sparql::TriplePattern(sparql::Variable("b0") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/statement/P463>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q202479>")),
 
-                                                   TriplePatternElement(TripleVariable("b0") ,
-                                                                        Term("<http://www.wikidata.org/prop/qualifier/P580>"),
-                                                                        TripleVariable("var2") ),
+                                                   sparql::TriplePattern(sparql::Variable("b0") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/qualifier/P580>"),
+                                                                        sparql::Variable("var2") ),
 
-                                                   TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/P463>"),
-                                                                        TripleVariable("b1") ),
+                                                   sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/P463>"),
+                                                                        sparql::Variable("b1") ),
 
-                                                   TriplePatternElement(TripleVariable("b1") ,
-                                                                        Term("<http://www.wikidata.org/prop/statement/P463>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q202479>") ),
+                                                   sparql::TriplePattern(sparql::Variable("b1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/statement/P463>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q202479>") ),
 
-                                                   TriplePatternElement(TripleVariable("b1") ,
-                                                                        Term("<http://www.wikidata.org/prop/qualifier/P582>"),
-                                                                        TripleVariable("var3") )
+                                                   sparql::TriplePattern(sparql::Variable("b1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/qualifier/P582>"),
+                                                                        sparql::Variable("var3") )
     };
 
     std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
@@ -235,9 +237,9 @@ TEST(BasicBgpsTests, GroupGraphPatternInsideGroupOrUnionGraphPattern) {
                                                      {'d','e'},
     };
 
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"var1"},
-                                                         TripleVariable{"var2"},
-                                                         TripleVariable{"var3"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"var1"},
+                                                         sparql::Variable{"var2"},
+                                                         sparql::Variable{"var3"}
     };
 
     SelectModifier selectModifier=SelectModifier::NONE;
@@ -254,39 +256,39 @@ TEST(BasicBgpsTests, GroupPatterns) {
             " { ?var1 <http://www.wikidata.org/prop/P463> _:b1 . _:b1 <http://www.wikidata.org/prop/statement/P463> wde:Q202479 ; <http://www.wikidata.org/prop/qualifier/P582> ?var3 } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
 
-    std::vector<TriplePatternElement> expectedBgps{TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/direct/P463>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q202479>") ),
+    std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/direct/P463>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q202479>") ),
 
-                                                   TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/direct/P31>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q5>") ),
+                                                   sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/direct/P31>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q5>") ),
 
-                                                   TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/P463>"),
-                                                                        TripleVariable("b0") ),
+                                                   sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/P463>"),
+                                                                        sparql::Variable("b0") ),
 
-                                                   TriplePatternElement(TripleVariable("b0") ,
-                                                                        Term("<http://www.wikidata.org/prop/statement/P463>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q202479>")),
+                                                   sparql::TriplePattern(sparql::Variable("b0") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/statement/P463>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q202479>")),
 
-                                                   TriplePatternElement(TripleVariable("b0") ,
-                                                                        Term("<http://www.wikidata.org/prop/qualifier/P580>"),
-                                                                        TripleVariable("var2") ),
+                                                   sparql::TriplePattern(sparql::Variable("b0") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/qualifier/P580>"),
+                                                                        sparql::Variable("var2") ),
 
-                                                   TriplePatternElement(TripleVariable("var1") ,
-                                                                        Term("<http://www.wikidata.org/prop/P463>"),
-                                                                        TripleVariable("b1") ),
+                                                   sparql::TriplePattern(sparql::Variable("var1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/P463>"),
+                                                                        sparql::Variable("b1") ),
 
-                                                   TriplePatternElement(TripleVariable("b1") ,
-                                                                        Term("<http://www.wikidata.org/prop/statement/P463>"),
-                                                                        Term("<http://www.wikidata.org/entity/Q202479>") ),
+                                                   sparql::TriplePattern(sparql::Variable("b1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/statement/P463>"),
+                                                                        rdf::parse_term("<http://www.wikidata.org/entity/Q202479>") ),
 
-                                                   TriplePatternElement(TripleVariable("b1") ,
-                                                                        Term("<http://www.wikidata.org/prop/qualifier/P582>"),
-                                                                        TripleVariable("var3") )
+                                                   sparql::TriplePattern(sparql::Variable("b1") ,
+                                                                        rdf::parse_term("<http://www.wikidata.org/prop/qualifier/P582>"),
+                                                                        sparql::Variable("var3") )
     };
 
     std::map<std::string,std::string> expectedPrefixes{{"wde", "http://www.wikidata.org/entity/"},
@@ -305,9 +307,9 @@ TEST(BasicBgpsTests, GroupPatterns) {
                                                      {'d','e'},
     };
 
-    std::vector<TripleVariable> expectedSelectVariables{ TripleVariable{"var1"},
-                                                         TripleVariable{"var2"},
-                                                         TripleVariable{"var3"}
+    std::vector<sparql::Variable> expectedSelectVariables{ sparql::Variable{"var1"},
+                                                         sparql::Variable{"var2"},
+                                                         sparql::Variable{"var3"}
     };
 
     SelectModifier selectModifier=SelectModifier::NONE;
