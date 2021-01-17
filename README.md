@@ -1,4 +1,4 @@
-# Tentris Sparql Parser
+# Tentris sparql parser
 
 This is the Sparql parser used by [Tentris](https://github.com/dice-group/tentris). It uses [ANTLR4](https://github.com/antlr/antlr4),
  It supports currently parsing select basic Sparql queries with optional.
