@@ -6,40 +6,60 @@ RUN apt-get -qq update && \
 
 
 
-# make build dir
-RUN mkdir /Sparql-parser
-RUN mkdir /Sparql-parser/build
-
-
 # setup conan
 RUN pip3 install conan
 RUN conan user && \
     conan profile new --detect default && \
-    conan profile update settings.compiler.libcxx=libstdc++11 default && \
-    conan profile update settings.compiler.version=10 default && \
-    conan profile update settings.compiler=gcc default && \
-    conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
+    conan profile update settings.compiler.libcxx=libstdc++11  default  && \
+    conan profile update settings.compiler.version=10 default  && \
+    conan profile new --detect clang11 && \
+    conan profile update settings.compiler=clang clang11 &&\
+    conan profile update settings.compiler.version=11 clang11 && \
+    conan profile update settings.compiler.libcxx=libstdc++11 clang11
 
 
-# copy conan and run conan
+RUN  conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
 
 
+ # copy project files
+COPY include /sparql-parser/include
+COPY cmake /sparql-parser/cmake
+COPY tests /sparql-parser/tests
+COPY CMakeLists.txt /sparql-parser/CMakeLists.txt
+COPY conanfile.py /sparql-parser/conanfile.py
 
 
- # copy project files except for conanfile (see above)
-COPY include /Sparql-parser/include
-COPY cmake /Sparql-parser/cmake
-COPY tests /Sparql-parser/tests
-COPY CMakeLists.txt /Sparql-parser/CMakeLists.txt
-COPY conanfile.py /Sparql-parser/conanfile.py
+#gcc
+WORKDIR /sparql-parser/build_gcc
 
-RUN cd Sparql-parser/build && \
-    conan install .. --build=missing
-# change working directory
-WORKDIR /Sparql-parser/build
+ENV CXX="g++-10"
+ENV CC="gcc-10"
+
+RUN conan install .. --build=missing  -o sparql-parser:with_tests=True
+
+## change working directory
+WORKDIR /sparql-parser/build_gcc
+#
 # run cmake
-RUN CC=gcc-10 CXX=g++-10 cmake -DSPARQL_PARSER_BUILD_TESTS=ON ..
+RUN CC=gcc-10 CXX=g++-10 cmake -DCMAKE_BUILD_TYPE=Release -DSPARQL_PARSER_BUILD_TESTS=ON ..
 # build
 RUN make -j $(nproc)
 
+#for clang
+## change working directory
+WORKDIR /sparql-parser/build_clang
+
+ENV CXX="clang++-11"
+ENV CC="clang-11"
+
+RUN conan install .. --build=missing --profile clang11 -o sparql-parser:with_tests=True
+# run cmake
+RUN CC=clang-11 CXX=clang++-11 cmake -DCMAKE_BUILD_TYPE=Release -DSPARQL_PARSER_BUILD_TESTS=ON ..
+# build
+RUN make -j $(nproc)
+
+WORKDIR /sparql-parser/build_clang
+RUN ./tests/tests
+
+WORKDIR /sparql-parser/build_gcc
 RUN ./tests/tests
