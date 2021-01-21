@@ -10,7 +10,7 @@
 namespace Dice::sparql_parser::internal {
     struct SelectClause {
         SelectNodeType nodeType;
-        std::vector<TripleVariable> selectVariables;
+        std::vector<sparql::Variable> selectVariables;
 
     };
 }

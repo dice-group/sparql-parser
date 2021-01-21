@@ -8,16 +8,16 @@
 #include <gtest/gtest.h>
 #include <Dice/sparql-parser/Parser.hpp>
 
-using namespace SparqlQueryGraph::Nodes::SelectNodes;
+using namespace Dice::sparql::Nodes::QueryNodes::SelectNodes;
 
 class TestUtilites
 {
 public:
     void static checkResult(std::shared_ptr<SelectNode> result,
                      std::vector<std::vector<char>> expectedOperands,
-                     std::vector<TriplePatternElement> expectedBgps,
-                     std::map<std::string,std::string> expectedPrefixes,
-                     std::vector<TripleVariable> expectedSelectVariables,
+                     std::vector<Dice::sparql::TriplePattern> expectedBgps,
+                     robin_hood::unordered_map<std::string,std::string> expectedPrefixes,
+                     std::vector<Dice::sparql::Variable> expectedSelectVariables,
                      std::vector<char> expectedSubscriptResult,
                      SelectModifier expectedSelectModifier
     )

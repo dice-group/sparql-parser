@@ -5,7 +5,7 @@ project(sparql-parser
         LANGUAGES CXX
         )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
 
@@ -14,7 +14,7 @@ include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
 find_package(sparql-parser-base REQUIRED)
 find_package(rdf-parser REQUIRED)
-find_package(sparql-queryGraph REQUIRED)
+find_package(sparql-query REQUIRED)
 find_package(robin_hood REQUIRED)
 
 # installation directories
@@ -29,10 +29,10 @@ target_include_directories(sparql-parser  INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${sparql-parser_INSTALL_CMAKE_DIR}>
         )
-target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-queryGraph::sparql-queryGraph robin_hood::robin_hood)
+target_link_libraries(sparql-parser INTERFACE  sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
 
-# require C++17
-target_compile_features(sparql-parser INTERFACE cxx_std_17)
+# require C++20
+target_compile_features(sparql-parser INTERFACE cxx_std_20)
 
 # Make package findable
 configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
@@ -55,8 +55,8 @@ install(DIRECTORY include/ DESTINATION ${sparql-parser_INSTALL_INCLUDE_DIR})
 
 
 # testing
-option(sparql-parser_BUILD_TESTS "Build sparql-parser tests." ON)
-if(sparql-parser_BUILD_TESTS)
+option(SPARQL_PARSER_BUILD_TESTS "Build sparql-parser tests." OFF)
+if(SPARQL_PARSER_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
