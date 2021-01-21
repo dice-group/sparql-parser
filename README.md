@@ -37,12 +37,12 @@ conan remote add dice "https://api.bintray.com/conan/dice-group/tentris"
 ## tests
 
 To compile the tests, run 
-`cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -Dsparql-parser_BUILD_TESTS=ON .. `
+`cmake -G "Unix Makefiles" -DSPARQL_PARSER_BUILD_TESTS=ON .. `
 
 
 ### Usage
 
-The parser is easy to use, for parsing queries include the header `<Dice/Sparql-Parser/Parser.hpp>` and use the static function `SparqlParser::Parser::parseSelectQuery(std::string query)` which returns `std::shared_ptr<SelectNode>`.
+The parser is easy to use, for parsing queries include the header `<Dice/sparql-parser/Parser.hpp>` and use the static function `Dice::sparql_parser::Parser::parseSelectQuery(std::string query)` which returns `std::shared_ptr<SelectNode>`.
  The information about the parsed query can be accessed through the returned pointer.
 
 Example :
@@ -53,7 +53,7 @@ std::string query{
             "  { ?book <dc:title> ?title ;\n"
             "         <ns:price> ?price ."
             "  }"};
-std::shared_ptr<SelectNode> selectNode=SparqlParser::Parser::parseSelectQuery(query);
+std::shared_ptr<SelectNode> selectNode=Dice::sparql_parser::Parser::parseSelectQuery(query);
 auto operands=selectNode->getOperands();
 auto bgps=selectNode->getBgps();
 auto  prefixes=selectNode->getPrefixes();
