@@ -17,22 +17,24 @@ RUN conan user && \
     conan profile new --detect default && \
     conan profile update settings.compiler.libcxx=libstdc++11 default && \
     conan profile update settings.compiler.version=10 default && \
+    conan profile update settings.compiler=gcc default && \
     conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
 
 
 # copy conan and run conan
-COPY conanfile.py /Sparql-parser/conanfile.py
-RUN cd Sparql-parser/build && \
-    conan install .. --build=missing
+
+
 
 
  # copy project files except for conanfile (see above)
- COPY include /Sparql-parser/include
- COPY cmake /Sparql-parser/cmake
- COPY tests /Sparql-parser/tests
- COPY CMakeLists.txt /Sparql-parser/CMakeLists.txt
+COPY include /Sparql-parser/include
+COPY cmake /Sparql-parser/cmake
+COPY tests /Sparql-parser/tests
+COPY CMakeLists.txt /Sparql-parser/CMakeLists.txt
+COPY conanfile.py /Sparql-parser/conanfile.py
 
-
+RUN cd Sparql-parser/build && \
+    conan install .. --build=missing
 # change working directory
 WORKDIR /Sparql-parser/build
 # run cmake
