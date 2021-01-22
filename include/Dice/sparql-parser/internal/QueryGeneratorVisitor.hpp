@@ -18,7 +18,9 @@
 #include <Dice/sparql-query/Nodes/QueryNodes/leafNodes/TriplePatternNode.hpp>
 #include <Dice/sparql-query/Nodes/SolutionDecorator.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/SpecialNodes/OptionalPatternNode.hpp>
-#include <Dice/sparql-query/Nodes/QueryNodes/GroupNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/SpecialNodes/MinusPatternNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/RegularGroupingNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/UnionGroupingNode.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/EmptyNode.hpp>
 #include <Dice/RDF/Term.hpp>
 
@@ -234,7 +236,7 @@ namespace Dice::sparql_parser::internal {
                 if ((ctx->triplesBlock() == nullptr) && (ctx->groupGraphPatternSubList().size() == 1)) {
                     queryNode = visitGroupGraphPatternSubList(ctx->groupGraphPatternSubList()[0]);
                 } else {
-                    std::shared_ptr<QueryNodes::GroupNode> groupNode = std::make_shared<QueryNodes::GroupNode>();
+                    std::shared_ptr<QueryNodes::GroupingNodes::RegularGroupingNode> groupNode = std::make_shared<QueryNodes::GroupingNodes::RegularGroupingNode>();
                     if (ctx->triplesBlock() != nullptr)
                         groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
                     for (auto &subList:ctx->groupGraphPatternSubList())
@@ -254,7 +256,7 @@ namespace Dice::sparql_parser::internal {
 
             //Deal with the triplesBlock
             if (ctx->triplesBlock() != nullptr) {
-                std::shared_ptr<QueryNodes::GroupNode> groupNode = std::make_shared<QueryNodes::GroupNode>();
+                std::shared_ptr<QueryNodes::GroupingNodes::RegularGroupingNode> groupNode = std::make_shared<QueryNodes::GroupingNodes::RegularGroupingNode>();
                 groupNode->addChild(visitGraphPatternNotTriples(ctx->graphPatternNotTriples()));
                 groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
                 queryNode = std::dynamic_pointer_cast<QueryNodes::QueryNode>(groupNode);
@@ -352,7 +354,7 @@ namespace Dice::sparql_parser::internal {
             } else if (ctx->optionalGraphPattern() != nullptr) {
                 queryNode = visitOptionalGraphPattern(ctx->optionalGraphPattern());
             } else if (ctx->minusGraphPattern() != nullptr) {
-                throw NotImplementedException();
+                queryNode= visitMinusGraphPattern(ctx->minusGraphPattern());
             } else if (ctx->graphGraphPattern() != nullptr) {
                 throw NotImplementedException();
             } else if (ctx->serviceGraphPattern() != nullptr) {
@@ -382,10 +384,25 @@ namespace Dice::sparql_parser::internal {
 
         antlrcpp::Any visitGroupOrUnionGraphPattern(
                 Dice::sparql_parser::base::SparqlParser::GroupOrUnionGraphPatternContext *ctx) override {
-            if(!ctx->UNION().empty())
-                throw NotImplementedException();
-            else
+            //if there is no union. then just visit the groupGraphPattern
+            if(ctx->UNION().empty())
                 return visitGroupGraphPattern(ctx->groupGraphPattern()[0]);
+            //else we add visit all the groupGraphPatterns and insert the result nodes into a union node.
+            else
+            {
+                std::shared_ptr<QueryNodes::GroupingNodes::UnionGroupingNode> unionNode=std::make_shared<QueryNodes::GroupingNodes::UnionGroupingNode>();
+                for(auto& groupGraphPattern:ctx->groupGraphPattern())
+                    unionNode->addChild(visitGroupGraphPattern(groupGraphPattern));
+                return unionNode;
+            }
+
+        }
+
+        antlrcpp::Any visitMinusGraphPattern(base::SparqlParser::MinusGraphPatternContext *ctx) override {
+            std::shared_ptr<QueryNodes::QueryNode> queryNode = visitGroupGraphPattern(ctx->groupGraphPattern());
+            std::shared_ptr<MinusPatternNode> minusNode = std::make_shared<MinusPatternNode>(queryNode);
+            std::shared_ptr<QueryNodes::QueryNode> innerNode = std::dynamic_pointer_cast<QueryNodes::QueryNode>(minusNode);
+            return innerNode;
         }
 
         virtual ~QueryGeneratorVisitor(){};
