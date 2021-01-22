@@ -21,6 +21,7 @@
 #include <Dice/sparql-query/Nodes/QueryNodes/SpecialNodes/MinusPatternNode.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/RegularGroupingNode.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/UnionGroupingNode.hpp>
+#include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/FilteringDecorator.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/EmptyNode.hpp>
 #include <Dice/RDF/Term.hpp>
 
