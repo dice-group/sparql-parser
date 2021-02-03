@@ -10,7 +10,7 @@ class sparqlParserBase(ConanFile):
     license = "AGPL"
     topics = "SPARQL", "parser", "semantic web"
     settings = "os", "compiler", "build_type", "arch"
-    requires="sparql-parser-base/0.2.2@dice-group/stable","sparql-query/0.10@dice-group/stable","rdf-parser/0.12@dice-group/stable","robin-hood-hashing/3.9.1","gtest/1.8.1"
+    requires="sparql-parser-base/0.2.2@dice-group/stable","sparql-query/0.11@dice-group/rc1","rdf-parser/0.13@dice-group/stable","robin-hood-hashing/3.9.1","gtest/1.8.1"
     options = {'with_tests': [False, True]}
     default_options = {'with_tests': False}
     generators = "cmake", "cmake_find_package", "cmake_paths"

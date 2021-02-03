@@ -1,11 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
-
-project(sparql-parser
-        VERSION 0.1.0
-        LANGUAGES CXX
-        )
-
+project(sparql-parser VERSION 0.2.0)
 set(CMAKE_CXX_STANDARD 20)
+
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
 
@@ -23,7 +19,7 @@ set(sparql-parser_INSTALL_CMAKE_DIR "share/sparql-parser/cmake" CACHE STRING "Th
 
 # define a header-only library
 add_library(sparql-parser  INTERFACE)
-add_library(Dice::sparql-parser  ALIAS sparql-parser )
+add_library(sparql-parser::sparql-parser  ALIAS sparql-parser )
 
 target_include_directories(sparql-parser  INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
