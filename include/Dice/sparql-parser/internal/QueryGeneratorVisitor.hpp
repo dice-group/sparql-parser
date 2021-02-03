@@ -21,7 +21,7 @@
 #include <Dice/sparql-query/Nodes/QueryNodes/EmptyNode.hpp>
 #include <Dice/RDF/Term.hpp>
 
-#include <Dice/rdf-parser/internal/Turtle/Parsers/TriplesBlockStringParser.hpp>
+#include <Dice/sparql-parser/internal/TriplesBlockStringParser.hpp>
 
 
 #include "SelectNodeType.hpp"
@@ -275,7 +275,7 @@ namespace Dice::sparql_parser::internal {
                     text += static_cast<std::string>(visitTriplesSameSubjectPath(it)) + " . ";
                 return text;
             };
-            rdf_parser::internal::Turtle::Parsers::TriplesBlockStringParser parser(getTriplesSameSubjectPathText(ctx), prefixes);
+            sparql_parser::internal::TriplesBlockStringParser parser(getTriplesSameSubjectPathText(ctx), prefixes);
             auto it = parser.begin();
             while (it) {
                 //ToDo check this

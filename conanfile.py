@@ -1,5 +1,6 @@
-from conans import ConanFile, CMake,tools
-
+import re, os
+from conans.tools import load
+from conans import ConanFile, CMake, tools
 
 class sparqlParserBase(ConanFile):
     name = "sparql-parser"
@@ -10,7 +11,7 @@ class sparqlParserBase(ConanFile):
     license = "AGPL"
     topics = "SPARQL", "parser", "semantic web"
     settings = "os", "compiler", "build_type", "arch"
-    requires="sparql-parser-base/0.2.2@dice-group/stable","sparql-query/0.11@dice-group/rc1","rdf-parser/0.13@dice-group/stable","robin-hood-hashing/3.9.1","gtest/1.8.1"
+    requires="sparql-parser-base/0.2.2@dice-group/stable","sparql-query/0.11.0@dice-group/rc1","rdf-parser/0.13@dice-group/stable","robin-hood-hashing/3.9.1"
     options = {'with_tests': [False, True]}
     default_options = {'with_tests': False}
     generators = "cmake", "cmake_find_package", "cmake_paths"
@@ -21,9 +22,11 @@ class sparqlParserBase(ConanFile):
          "include/*")
     no_copy_source = True
 
-    def requirements(self):
-        if self.options.with_tests:
-            self.requires("gtest/1.8.1")
+
+    def set_version(self):
+        if not hasattr(self, 'version') or self.version is None:
+            cmake_file = load(os.path.join(self.recipe_folder, "CMakeLists.txt"))
+            self.version = re.search("project\(sparql-parser VERSION (.*)\)", cmake_file).group(1)
 
     def package(self):
         cmake = CMake(self)
