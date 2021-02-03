@@ -42,7 +42,10 @@ TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
 
 TEST(BasicOptionalPatternTests, multipleBgpsBeforeOptional) {
     std::string query{
-            "SELECT ?s ?t ?e WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal> . ?s <http://purl.org/dc/elements/1.1/title> ?t . OPTIONAL{?s <http://swrc.ontoware.org/ontology#editor> ?e}}"};
+            "SELECT ?s ?t ?e WHERE"
+            " {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal> ."
+            " ?s <http://purl.org/dc/elements/1.1/title> ?t ."
+            " OPTIONAL{?s <http://swrc.ontoware.org/ontology#editor> ?e}}"};
 
 
     std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
