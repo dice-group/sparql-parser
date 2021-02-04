@@ -45,13 +45,12 @@ namespace Dice::sparql_parser::internal {
 		antlrcpp::Any visitQuery(Dice::sparql_parser::base::SparqlParser::QueryContext *ctx) override {
 
 			//get the prefixes
-			prefixes = static_cast<robin_hood::unordered_map<std::string, std::string>>(visitPrologue(ctx->prologue()));
+			prefixes = visitPrologue(ctx->prologue()).as<decltype(prefixes)>();
 
 			//For now the parser only supports Select queries.
 			if (ctx->selectQuery() != nullptr) {
-				std::shared_ptr<SelectNode> selectNode = visitSelectQuery(ctx->selectQuery());
 				//create the select query
-				return selectNode;
+				return visitSelectQuery(ctx->selectQuery());
 			} else
 				return NotImplementedException();
 		}
@@ -64,6 +63,7 @@ namespace Dice::sparql_parser::internal {
 					local_prefixes["base"] = local_prefixes["Base"];
 					local_prefixes[""] = local_prefixes["Base"];
 				}
+				// TODO: "Base", "base" and "" must map "" -> given IRI
 				for (auto prefixStatement : ctx->prefixDecl()) {
 					std::string pname = prefixStatement->PNAME_NS()->getText();
 					pname = std::string(pname, 0, pname.size() - 1);
@@ -78,42 +78,37 @@ namespace Dice::sparql_parser::internal {
 		visitSelectQuery(Dice::sparql_parser::base::SparqlParser::SelectQueryContext *ctx) override {
 
 			std::shared_ptr<SelectNode> selectNode;
-			std::shared_ptr<Node> node;
 
 			//visit where clause
-			std::shared_ptr<QueryNodes::QueryNode> queryNode = visitWhereClause(ctx->whereClause());
+			std::shared_ptr<Node> node = visitWhereClause(ctx->whereClause()).as<std::shared_ptr<QueryNodes::QueryNode>>();
 
 			//get all solution modifiers. visitSolutionModifier() must handle the order.
-			std::vector<std::shared_ptr<SolutionModifier>> solutionModifiers = visitSolutionModifier(
-					ctx->solutionModifier());
+			auto solutionModifiers = visitSolutionModifier(
+											 ctx->solutionModifier())
+											 .as<std::vector<std::shared_ptr<SolutionModifier>>>();
 
 			//deal with the solution modifiers
-			if (not solutionModifiers.empty()) {
-
-				//get the first modifier
-				std::shared_ptr<SolutionModifier> firstModifier = solutionModifiers.front();
-				solutionModifiers.pop_back();
-				std::shared_ptr<SolutionDecorator> solutionDecorator = std::make_shared<SolutionDecorator>(queryNode,
-																										   firstModifier);
-
-				//go through the rest of the modifiers and add them to the decorator
-				for (auto const &solutionModifier : solutionModifiers)
-					solutionDecorator = std::make_shared<SolutionDecorator>(solutionDecorator, solutionModifier);
-
-				node = solutionDecorator;
-			} else
-				node = queryNode;
+			//go through the modifiers and add them to the decorator
+			for (auto const &solutionModifier : solutionModifiers)
+				node = std::make_shared<SolutionDecorator>(node, solutionModifier);
 
 			//deal with the SelectClause to define the SelectNode Type(Distinct,Reduced,Default) and to get the select variables
-			SelectClause clause = visitSelectClause(ctx->selectClause());
+			auto clause = visitSelectClause(ctx->selectClause()).as<SelectClause>();
 
 			//create the selectNode
-			if (clause.nodeType == SelectNodeType::DISTINCT)
-				selectNode = std::make_shared<DistinctSelectNode>(node, clause.selectVariables, prefixes);
-			else if (clause.nodeType == SelectNodeType::REDUCED)
-				selectNode = std::make_shared<ReducedSelectNode>(node, clause.selectVariables, prefixes);
-			else
-				selectNode = std::make_shared<DefaultSelectNode>(node, clause.selectVariables, prefixes);
+
+			switch (clause.nodeType) {
+
+				case SelectNodeType::DEFAULT:
+					selectNode = std::make_shared<DefaultSelectNode>(node, clause.selectVariables, prefixes);
+					break;
+				case SelectNodeType::DISTINCT:
+					selectNode = std::make_shared<DistinctSelectNode>(node, clause.selectVariables, prefixes);
+					break;
+				case SelectNodeType::REDUCED:
+					selectNode = std::make_shared<ReducedSelectNode>(node, clause.selectVariables, prefixes);
+					break;
+			}
 
 			return selectNode;
 		}
