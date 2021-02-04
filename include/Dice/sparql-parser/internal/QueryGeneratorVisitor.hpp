@@ -120,26 +120,20 @@ namespace Dice::sparql_parser::internal {
 			SelectClause selectClause;
 
 			//deal with node type
-			SelectNodeType nodeType;
-
 			if (ctx->selectModifier() != nullptr)
-				nodeType = visitSelectModifier(ctx->selectModifier());
+				selectClause.nodeType = visitSelectModifier(ctx->selectModifier());
 			else
-				nodeType = SelectNodeType::DEFAULT;
-
-			selectClause.nodeType = nodeType;
+				selectClause.nodeType = SelectNodeType::DEFAULT;
 
 			//deal with the variables
-			std::vector<sparql::Variable> selectVariables;
 			if (ctx->ASTERISK() != nullptr)
-				selectVariables.emplace_back("*");
+				selectClause.selectVariables.emplace_back("*");
 			else {
 				for (auto selectVariable : ctx->selectVariables()) {
-					selectVariables.emplace_back(
+					selectClause.selectVariables.emplace_back(
 							std::string(selectVariable->getText(), 1, selectVariable->getText().size() - 1));
 				}
 			}
-			selectClause.selectVariables = selectVariables;
 
 			return selectClause;
 		}
