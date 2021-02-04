@@ -17,7 +17,7 @@ TEST(ComplexOptionalPatternTests, optionalWithBlankNodes) {
             "OPTIONAL { ?var1 <http://www.wikidata.org/prop/P463> _:b1 . _:b1 <http://www.wikidata.org/prop/statement/P463> wde:Q202479 ; <http://www.wikidata.org/prop/qualifier/P582> ?var3 } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=Dice::sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=Dice::sparql_parser::parseSelectQuery(query);
 
 
 

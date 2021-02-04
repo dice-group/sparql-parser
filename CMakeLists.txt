@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16)
 project(sparql-parser VERSION 0.3.0)
 set(CMAKE_CXX_STANDARD 20)
 
@@ -18,17 +18,17 @@ set(sparql-parser_INSTALL_INCLUDE_DIR "include" CACHE STRING "The installation i
 set(sparql-parser_INSTALL_CMAKE_DIR "share/sparql-parser/cmake" CACHE STRING "The installation cmake directory")
 
 # define a header-only library
-add_library(sparql-parser  INTERFACE)
-add_library(sparql-parser::sparql-parser  ALIAS sparql-parser )
+add_library(sparql-parser INTERFACE)
+add_library(sparql-parser::sparql-parser ALIAS sparql-parser)
 
-target_include_directories(sparql-parser  INTERFACE
+target_include_directories(sparql-parser INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${sparql-parser_INSTALL_CMAKE_DIR}>
         )
-target_link_libraries(sparql-parser INTERFACE  sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
+target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
 
 # require C++20
-target_compile_features(sparql-parser INTERFACE cxx_std_20)
+set_property(TARGET sparql-parser PROPERTY CXX_STANDARD 20)
 
 # Make package findable
 configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
@@ -52,8 +52,8 @@ install(DIRECTORY include/ DESTINATION ${sparql-parser_INSTALL_INCLUDE_DIR})
 
 # testing
 option(SPARQL_PARSER_BUILD_TESTS "Build sparql-parser tests." OFF)
-if(SPARQL_PARSER_BUILD_TESTS)
+if (SPARQL_PARSER_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
-endif()
+endif ()
 unset(sparql-parser_BUILD_TESTS CACHE)

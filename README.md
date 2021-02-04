@@ -42,7 +42,7 @@ To compile the tests, run
 
 ### Usage
 
-The parser is easy to use, for parsing queries include the header `<Dice/sparql-parser/Parser.hpp>` and use the static function `Dice::sparql_parser::Parser::parseSelectQuery(std::string query)` which returns `std::shared_ptr<SelectNode>`.
+The parser is easy to use, for parsing queries include the header `<Dice/sparql-parser/Parser.hpp>` and use the static function `Dice::sparql_parser::parseSelectQuery(std::string query)` which returns `std::shared_ptr<SelectNode>`.
  The information about the parsed query can be accessed through the returned pointer.
 
 Example :
@@ -53,7 +53,7 @@ std::string query{
     " {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal> ."
     " ?s <http://purl.org/dc/elements/1.1/title> ?t ."
     " OPTIONAL{?s <http://swrc.ontoware.org/ontology#editor> ?e}}"};
-std::shared_ptr<SelectNode> selectNode=Dice::sparql_parser::Parser::parseSelectQuery(query);
+std::shared_ptr<SelectNode> selectNode=Dice::sparql_parser::parseSelectQuery(query);
 auto operands=selectNode->getOperands();
 auto bgps=selectNode->getBgps();
 auto  prefixes=selectNode->getPrefixes();

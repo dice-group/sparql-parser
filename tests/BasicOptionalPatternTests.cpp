@@ -15,7 +15,7 @@ TEST(BasicOptionalPatternTests, emptyOptionalPattern) {
             " SELECT * WHERE { ?var1 wdt:P31 wde:Q5 OPTIONAL { } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'['},
@@ -48,7 +48,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsBeforeOptional) {
             " OPTIONAL{?s <http://swrc.ontoware.org/ontology#editor> ?e}}"};
 
 
-    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b'},
@@ -78,7 +78,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsInsideOptional) {
             "SELECT ?a ?t ?j ?e WHERE {?a <http://purl.org/dc/elements/1.1/title> ?t . OPTIONAL { ?a <http://swrc.ontoware.org/ontology#journal> ?j . ?j <http://swrc.ontoware.org/ontology#editor> ?e  } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'['},
@@ -110,7 +110,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndOneOptional
             "SELECT DISTINCT ?person ?paper WHERE { ?role swc:isRoleAt <http://data.semanticweb.org/conference/eswc/2010> ; rdf:type swc:Chair ; swc:heldBy ?person OPTIONAL { ?person foaf:made ?paper } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a',},
@@ -145,7 +145,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColonAndTwoOptional
             " SELECT DISTINCT ?name ?title ?author WHERE { ?role swc:isRoleAt <http://data.semanticweb.org/conference/eswc/2010> ; rdf:type swc:Chair ; swc:heldBy ?person . ?person foaf:name ?name OPTIONAL { ?person foaf:made ?paper . ?paper dce:title ?title } OPTIONAL { ?paper dce:creator ?author } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a',},
@@ -190,7 +190,7 @@ TEST(BasicOptionalPatternTests, multipleBgpsConnectedWithSemiColon3) {
             " SELECT ?el ?et WHERE { <http://data.semanticweb.org/workshop/usewod/2012> swc:hasLocation ?l . ?e swc:hasLocation ?l ; rdfs:label ?el OPTIONAL { ?e dce:title ?et } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=sparql_parser::Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=sparql_parser::parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'b','a'},

@@ -4,20 +4,20 @@
 #include <exception>
 
 namespace Dice::sparql_parser::internal {
-    class ParseException : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
-            return "The query can't be parsed";
-        }
-    };
+	class ParseException : public std::exception {
+	public:
+		[[nodiscard]] const char *what() const noexcept override {
+			return "The query can't be parsed.";
+		}
+	};
 
 
-    class NotImplementedException : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
-            return "This functionality is not implemented yet";
-        }
-    };
+	class NotImplementedException : public std::exception {
+	public:
+		[[nodiscard]] const char *what() const noexcept override {
+			return "This functionality is not implemented yet.";
+		}
+	};
 
-}
-#endif //SPARQL_PARSER_EXCEPTIONS_HPP
+}// namespace Dice::sparql_parser::internal
+#endif//SPARQL_PARSER_EXCEPTIONS_HPP

@@ -17,7 +17,7 @@ TEST(BasicBgpsTests, BasicSelectQueryDefaultTest) {
             "         <ns:price> ?price ."
             "  }"};
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
@@ -45,7 +45,7 @@ TEST(BasicBgpsTests, BasicSelectQueryDistinctTest) {
             "         <ns:price> ?price ."
             "  }"};
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
                                                      {'a','c'}
@@ -73,7 +73,7 @@ TEST(BasicBgpsTests, BasicSelectQueryReducedTest) {
             "         <ns:price> ?price ."
             "  }"};
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
 
     std::vector<std::vector<char>> expectedOperands {{'a','b'},
@@ -99,7 +99,7 @@ TEST(BasicBgpsTests, multipleBgps) {
             "SELECT ?s ?e WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Journal>.?s <http://swrc.ontoware.org/ontology#editor> ?e}"};
 
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b'}
@@ -123,7 +123,7 @@ TEST(BasicBgpsTests, multipleBgps2) {
             "SELECT DISTINCT ?s ?p ?o WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://localhost/vocabulary/bench/Article> . ?s ?p ?o .}"};
 
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'a','b','c'}
@@ -152,7 +152,7 @@ TEST(BasicBgpsTests, multipleBgpsConnectedWithSemiColon) {
             " SELECT ?el ?et WHERE { <http://data.semanticweb.org/workshop/usewod/2012> swc:hasLocation ?l . ?e swc:hasLocation ?l ; rdfs:label ?el }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<std::vector<char>> expectedOperands {{'a'},
                                                      {'b','a'},
@@ -186,7 +186,7 @@ TEST(BasicBgpsTests, GroupGraphPatternInsideGroupOrUnionGraphPattern) {
             " { ?var1 <http://www.wikidata.org/prop/P463> _:b1 . _:b1 <http://www.wikidata.org/prop/statement/P463> wde:Q202479 ; <http://www.wikidata.org/prop/qualifier/P582> ?var3 } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("var1") ,
                                                                         rdf::parse_term("<http://www.wikidata.org/prop/direct/P463>"),
@@ -256,7 +256,7 @@ TEST(BasicBgpsTests, GroupPatterns) {
             " { ?var1 <http://www.wikidata.org/prop/P463> _:b1 . _:b1 <http://www.wikidata.org/prop/statement/P463> wde:Q202479 ; <http://www.wikidata.org/prop/qualifier/P582> ?var3 } }"};
 
 
-    std::shared_ptr<SelectNode> selectNode=Parser::parseSelectQuery(query);
+    std::shared_ptr<SelectNode> selectNode=parseSelectQuery(query);
 
     std::vector<sparql::TriplePattern> expectedBgps{sparql::TriplePattern(sparql::Variable("var1") ,
                                                                         rdf::parse_term("<http://www.wikidata.org/prop/direct/P463>"),
