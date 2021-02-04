@@ -7,6 +7,7 @@
 #include <robin_hood.h>
 
 #include <Dice/RDF/Term.hpp>
+#include <Dice/sparql-parser/internal/TriplesBlockStringParser.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/EmptyNode.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/FilteringDecorator.hpp>
 #include <Dice/sparql-query/Nodes/QueryNodes/GroupingNodes/RegularGroupingNode.hpp>
@@ -20,7 +21,6 @@
 #include <Dice/sparql-query/Nodes/QueryNodes/leafNodes/TriplePatternNode.hpp>
 #include <Dice/sparql-query/Nodes/SolutionDecorator.hpp>
 #include <SparqlParser/SparqlParserBaseVisitor.h>
-#include <Dice/sparql-parser/internal/TriplesBlockStringParser.hpp>
 
 
 #include "Dice/sparql-parser/internal/Exceptions.hpp"
@@ -48,7 +48,7 @@ namespace Dice::sparql_parser::internal {
 			prefixes = static_cast<robin_hood::unordered_map<std::string, std::string>>(visitPrologue(ctx->prologue()));
 
 			//For now the parser only supports Select queries.
-			if (ctx->selectQuery() != NULL) {
+			if (ctx->selectQuery() != nullptr) {
 				std::shared_ptr<SelectNode> selectNode = visitSelectQuery(ctx->selectQuery());
 				//create the select query
 				return selectNode;
@@ -57,21 +57,21 @@ namespace Dice::sparql_parser::internal {
 		}
 
 		antlrcpp::Any visitPrologue(Dice::sparql_parser::base::SparqlParser::PrologueContext *ctx) override {
-			robin_hood::unordered_map<std::string, std::string> prefixes;
+			robin_hood::unordered_map<std::string, std::string> local_prefixes;
 			if (ctx != nullptr) {
 				if (ctx->baseDecl(0) != nullptr) {
-					prefixes["Base"] = ctx->baseDecl(0)->IRIREF()->getText();
-					prefixes["base"] = prefixes["Base"];
-					prefixes[""] = prefixes["Base"];
+					local_prefixes["Base"] = ctx->baseDecl(0)->IRIREF()->getText();
+					local_prefixes["base"] = local_prefixes["Base"];
+					local_prefixes[""] = local_prefixes["Base"];
 				}
 				for (auto prefixStatement : ctx->prefixDecl()) {
 					std::string pname = prefixStatement->PNAME_NS()->getText();
 					pname = std::string(pname, 0, pname.size() - 1);
 					std::string iriRef = prefixStatement->IRIREF()->getText();
-					prefixes[pname] = std::string(iriRef, 1, iriRef.size() - 2);
+					local_prefixes[pname] = std::string(iriRef, 1, iriRef.size() - 2);
 				}
 			}
-			return prefixes;
+			return local_prefixes;
 		}
 
 		antlrcpp::Any
@@ -88,7 +88,7 @@ namespace Dice::sparql_parser::internal {
 					ctx->solutionModifier());
 
 			//deal with the solution modifiers
-			if (solutionModifiers.size() != 0) {
+			if (not solutionModifiers.empty()) {
 
 				//get the first modifier
 				std::shared_ptr<SolutionModifier> firstModifier = solutionModifiers.front();
@@ -137,11 +137,11 @@ namespace Dice::sparql_parser::internal {
 			//deal with the variables
 			std::vector<sparql::Variable> selectVariables;
 			if (ctx->ASTERISK() != nullptr)
-				selectVariables.push_back(sparql::Variable("*"));
+				selectVariables.emplace_back("*");
 			else {
 				for (auto selectVariable : ctx->selectVariables()) {
-					selectVariables.push_back(sparql::Variable(
-							std::string(selectVariable->getText(), 1, selectVariable->getText().size() - 1)));
+					selectVariables.emplace_back(
+							std::string(selectVariable->getText(), 1, selectVariable->getText().size() - 1));
 				}
 			}
 			selectClause.selectVariables = selectVariables;
@@ -260,7 +260,7 @@ namespace Dice::sparql_parser::internal {
 			//The following logic is to add (deleted)whitespaces between the tokens in order to process it by the rdf_parser
 			auto getTriplesSameSubjectPathText = [&](
 														 Dice::sparql_parser::base::SparqlParser::TriplesBlockContext *ctx) -> std::string {
-				std::string text = "";
+				std::string text;
 				for (auto &it : ctx->triplesSameSubjectPath())
 					text += static_cast<std::string>(visitTriplesSameSubjectPath(it)) + " . ";
 				return text;
@@ -388,7 +388,8 @@ namespace Dice::sparql_parser::internal {
 			return innerNode;
 		}
 
-		virtual ~QueryGeneratorVisitor(){};
+		~QueryGeneratorVisitor() override = default;
+		;
 	};
 
 }// namespace Dice::sparql_parser::internal
