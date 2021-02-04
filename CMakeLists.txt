@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(sparql-parser VERSION 0.2.0)
+project(sparql-parser VERSION 0.3.0)
 set(CMAKE_CXX_STANDARD 20)
 
 
