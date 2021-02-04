@@ -188,7 +188,7 @@ namespace Dice::sparql_parser::internal {
 			std::shared_ptr<QueryNodes::QueryNode> queryNode;
 
 			if (ctx->subSelect() != nullptr)
-				queryNode = visitSubSelect(ctx->subSelect());
+				throw NotImplementedException();
 			else
 				queryNode = visitGroupGraphPatternSub(ctx->groupGraphPatternSub());
 
@@ -218,7 +218,7 @@ namespace Dice::sparql_parser::internal {
 						groupNode->addChild(visitTriplesBlock(ctx->triplesBlock()));
 					for (auto &subList : ctx->groupGraphPatternSubList())
 						groupNode->addChild(visitGroupGraphPatternSubList(subList));
-					queryNode = std::dynamic_pointer_cast<QueryNodes::QueryNode>(groupNode);
+					queryNode = groupNode;
 				}
 			}
 			return queryNode;
@@ -247,21 +247,18 @@ namespace Dice::sparql_parser::internal {
 			std::shared_ptr<QueryNodes::QueryNode> queryNode;
 			std::vector<sparql::TriplePattern> elements;
 			//The following logic is to add (deleted)whitespaces between the tokens in order to process it by the rdf_parser
-			auto getTriplesSameSubjectPathText = [&](
-														 Dice::sparql_parser::base::SparqlParser::TriplesBlockContext *ctx) -> std::string {
+			auto getTriplesSameSubjectPathText =
+					[&](Dice::sparql_parser::base::SparqlParser::TriplesBlockContext *ctx) -> std::string {
 				std::string text;
 				for (auto &it : ctx->triplesSameSubjectPath())
 					text += static_cast<std::string>(visitTriplesSameSubjectPath(it)) + " . ";
 				return text;
 			};
+
 			sparql_parser::internal::TriplesBlockStringParser parser(getTriplesSameSubjectPathText(ctx), prefixes);
-			auto it = parser.begin();
-			while (it) {
-				//ToDo check this
-				sparql::TriplePattern triple = (sparql::TriplePattern &&) * it;
-				elements.push_back(triple);
-				it++;
-			}
+			for (const auto &triple_pattern : parser)
+				elements.push_back(triple_pattern);
+
 			queryNode = std::make_shared<TriplePatternNode>(elements);
 			return queryNode;
 		}
