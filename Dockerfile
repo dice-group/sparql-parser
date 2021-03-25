@@ -18,7 +18,7 @@ RUN conan user && \
     conan profile update settings.compiler.libcxx=libstdc++11 clang11
 
 
-RUN  conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
+RUN  conan remote add dice-group https://conan.dice-research.org/artifactory/api/conan/tentris
 
 
  # copy project files

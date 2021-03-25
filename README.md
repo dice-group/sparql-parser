@@ -11,7 +11,7 @@ install conan, cmake and a C++20 compiler
 
 add conan remotes
 ```
-conan remote add dice "https://api.bintray.com/conan/dice-group/tentris"
+conan remote add dice-group "https://conan.dice-research.org/artifactory/api/conan/tentris"
 
 ```
 
@@ -30,7 +30,7 @@ make -j
 recipe : sparql-parser/0.2.0@dice-group/stable
 
 ```
-conan remote add dice "https://api.bintray.com/conan/dice-group/tentris"
+conan remote add dice-group "https://conan.dice-research.org/artifactory/api/conan/tentris"
 
 ```
 

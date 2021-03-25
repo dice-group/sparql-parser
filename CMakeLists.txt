@@ -27,9 +27,6 @@ target_include_directories(sparql-parser INTERFACE
         )
 target_link_libraries(sparql-parser INTERFACE sparql-parser-base::sparql-parser-base rdf-parser::rdf-parser sparql-query::sparql-query robin_hood::robin_hood)
 
-# require C++20
-set_property(TARGET sparql-parser PROPERTY CXX_STANDARD 20)
-
 # Make package findable
 configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
 
